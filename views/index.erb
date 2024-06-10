@@ -1,13 +1,14 @@
 <h1>Assets Listing</h1>
 <ul>
   <% @assets.each do |a| %>
-    <% p a %>
+    <% id, type, username, available = a %>
+    <% available = available == 1 ? true : false %>
     <li>
       <p>
-        Asset Type: <%= a[:type] %> </br>
-        Available: <%= a[:available] %> </br>
-        <% unless a[:available] %>
-          User: <%= a[:username] %>
+        Asset Type: <%= type %> </br>
+        Available: <%= available ? 'Yes' : 'No' %> </br>
+        <% unless available %>
+          User: <%= username %>
         <% end %>
       </p>
     </li>
