@@ -1,0 +1,13 @@
+<h1>Asset</h1>
+<a href="/">Go home</a>
+<p>
+  <% @asset %>
+  <% available = @asset['available'] == 1 ? true : false %>
+  Asset Type: <%= @asset['type'] %> </br>
+  Serial Number: <%= @asset['serial_number'] %> </br>
+  Available: <%= available ? 'Yes' : 'No' %> </br>
+  <% unless available %>
+    User: <%= @asset['username'] %>
+  <% end %>
+</p>
+<a href="/assets/<%= @asset['id'] %>/edit">Edit Asset</a>

@@ -29,7 +29,9 @@ class AssetsTracker < Sinatra::Base
   end
 
   get '/assets/:id' do
-    p "show asset: #{params[:id]}"
+    @asset = db.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
+
+    erb :asset
   end
 
   post '/assets' do
