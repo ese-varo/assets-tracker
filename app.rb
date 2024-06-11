@@ -3,6 +3,8 @@ require 'json'
 require 'sqlite3'
 
 class AssetsTracker < Sinatra::Base
+  use Rack::MethodOverride
+
   # Open a database
   db = SQLite3::Database.new "test.db"
 
