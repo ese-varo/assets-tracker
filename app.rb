@@ -32,6 +32,12 @@ class AssetsTracker < Sinatra::Base
     erb :new
   end
 
+  get '/assets/:id/edit' do
+    @asset = db.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
+
+    erb :edit
+  end
+
   get '/assets/:id' do
     @asset = db.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
 
@@ -51,7 +57,14 @@ class AssetsTracker < Sinatra::Base
     redirect '/'
   end
 
-  post '/assets/:id' do
-    p "modify asset: #{params[:id]}"
+  put '/assets/:id' do
+    stmt = db.prepare <<-SQL
+      UPDATE assets
+      SET type = ?, serial_number = ?
+      WHERE id = ?
+    SQL
+    stmt.execute params['type'], params['serial_number'], params['id']
+
+    redirect "/assets/#{params['id']}"
   end
 end
