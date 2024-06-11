@@ -7,16 +7,20 @@ class AssetsTracker < Sinatra::Base
 
   # Open a database
   db = SQLite3::Database.new "test.db"
+  db.results_as_hash = true
 
   # Create a database
-  db.execute <<-SQL
+  stmt = db.prepare <<-SQL
     CREATE TABLE IF NOT EXISTS assets (
-      id        INTEGER PRIMARY KEY ASC,
-      type      VARCHAR(80),
-      username  VARCHAR(50),
-      available BOOLEAN
+      id            INTEGER PRIMARY KEY ASC,
+      serial_number VARCHAR(80) NOT NULL,
+      type          VARCHAR(80) NOT NULL,
+      username      VARCHAR(50) DEFAULT NULL,
+      available     BOOLEAN DEFAULT 1
     );
   SQL
+  stmt.execute
+  stmt.close
 
   get '/' do
     @assets = db.execute( "SELECT * FROM assets" )
