@@ -28,6 +28,10 @@ class AssetsTracker < Sinatra::Base
     erb :index
   end
 
+  get '/assets/new' do
+    erb :new
+  end
+
   get '/assets/:id' do
     @asset = db.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
 
@@ -35,7 +39,16 @@ class AssetsTracker < Sinatra::Base
   end
 
   post '/assets' do
-    p "add new asset"
+    query = <<-SQL
+      INSERT INTO assets (type, serial_number)
+      VALUES (?, ?)
+    SQL
+    db.execute query, [
+      params['type'].capitalize,
+      params['serial-number'].upcase
+    ]
+
+    redirect '/'
   end
 
   post '/assets/:id' do
