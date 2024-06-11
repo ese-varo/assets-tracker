@@ -1,15 +1,17 @@
 <h1>Assets Listing</h1>
+<a href="/assets/new">Add new asset</a>
 <ul>
   <% @assets.each do |a| %>
-    <% id, type, username, available = a %>
-    <% available = available == 1 ? true : false %>
+    <% available = a['available'] == 1 ? true : false %>
     <li>
       <p>
-        Asset Type: <%= type %> </br>
+        Asset Type: <%= a['type'] %> </br>
+        Serial Number: <%= a['serial_number'] %> </br>
         Available: <%= available ? 'Yes' : 'No' %> </br>
         <% unless available %>
-          User: <%= username %>
+          User: <%= a['username'] %>
         <% end %>
+        <a href="/assets/<%= a['id'] %>/edit">Edit</a>
       </p>
     </li>
   <% end %>
