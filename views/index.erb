@@ -11,7 +11,18 @@
         <% unless available %>
           User: <%= a['username'] %>
         <% end %>
-        <a href="/assets/<%= a['id'] %>/edit">Edit</a>
+        <form
+          action="/assets/<%= a['id'] %>"
+          method="post"
+          style="display: inline;">
+          <input type="hidden" name="_method" value="delete">
+          <button type="submit">Delete</button>
+        </form>
+        <form
+          action="/assets/<%= a['id'] %>/edit"
+          style="display: inline;">
+          <button type="submit">Edit</button>
+        </form>
       </p>
     </li>
   <% end %>

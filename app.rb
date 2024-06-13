@@ -67,4 +67,10 @@ class AssetsTracker < Sinatra::Base
 
     redirect "/assets/#{params['id']}"
   end
+
+  delete '/assets/:id' do
+    db.execute "DELETE FROM assets WHERE id = ?", params['id']
+
+    redirect "/"
+  end
 end
