@@ -10,4 +10,6 @@
     User: <%= @asset['username'] %>
   <% end %>
 </p>
-<a href="/assets/<%= @asset['id'] %>/edit">Edit Asset</a>
+<form action="/assets/<%= @asset['id'] %>/edit">
+  <button type="submit">Edit</button>
+</form>
