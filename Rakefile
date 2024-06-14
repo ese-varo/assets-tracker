@@ -26,6 +26,9 @@ end
   TMP
 end
 
+# Usage
+# cli example command: rake task_name[migration_class_name]
+# e.g. rake generate_migration[create_users]
 desc "Generate migration"
 task :generate_migration, [:name] do |t, args|
   Dir.chdir('db/migrations')
