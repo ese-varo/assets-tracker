@@ -8,10 +8,12 @@ module Migrations
     end
 
     def run_migrations
+      @db.transaction
       migrations.each do |migration|
         clazz = eval(migration.to_s)
         clazz.new(@db).up
       end
+      @db.commit
     end
 
     def migrations
