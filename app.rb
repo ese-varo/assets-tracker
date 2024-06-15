@@ -15,13 +15,15 @@ class AssetsTracker < Sinatra::Base
   end
 
   get '/assets/:id/edit' do
-    @asset = DB.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
+    @asset = DB.get_first_row(
+      "SELECT * FROM assets WHERE id = ?", params[:id])
 
     erb :edit
   end
 
   get '/assets/:id' do
-    @asset = DB.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
+    @asset = DB.get_first_row(
+      "SELECT * FROM assets WHERE id = ?", params[:id])
 
     erb :asset
   end
