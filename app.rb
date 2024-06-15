@@ -60,7 +60,10 @@ class AssetsTracker < Sinatra::Base
   put '/assets/:id' do
     stmt = db.prepare <<-SQL
       UPDATE assets
-      SET type = ?, serial_number = ?
+      SET
+        type = ?,
+        serial_number = ?,
+        updated_at = (unixepoch('now', 'localtime'))
       WHERE id = ?
     SQL
     stmt.execute params['type'], params['serial_number'], params['id']

@@ -1,10 +1,10 @@
-Dir.chdir('db')
 require 'sqlite3'
+require_relative '../config/environment'
 
 module Migrations
   class Setup
-    def initialize(db_name)
-      @db = SQLite3::Database.new db_name
+    def initialize(db)
+      @db = db
     end
 
     def run_migrations
@@ -17,6 +17,7 @@ module Migrations
     end
 
     def migrations
+      Dir.chdir('db')
       Dir["migrations/*.rb"].each { |file| require_relative file }
       Migrations.constants.select do |c|
         Migrations.const_get(c).is_a?(Class) &&
@@ -40,5 +41,5 @@ module Migrations
   end
 end
 
-Migrations::Setup.new("test.db").run_migrations
+Migrations::Setup.new(DB).run_migrations
 
