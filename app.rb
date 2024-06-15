@@ -1,29 +1,11 @@
 require 'sinatra'
-require 'json'
-require 'sqlite3'
+require_relative 'config/environment'
 
 class AssetsTracker < Sinatra::Base
   use Rack::MethodOverride
 
-  # Open a database
-  db = SQLite3::Database.new "test.db"
-  db.results_as_hash = true
-
-  # Create a database
-  stmt = db.prepare <<-SQL
-    CREATE TABLE IF NOT EXISTS assets (
-      id            INTEGER PRIMARY KEY ASC,
-      serial_number VARCHAR(80) NOT NULL,
-      type          VARCHAR(80) NOT NULL,
-      username      VARCHAR(50) DEFAULT NULL,
-      available     BOOLEAN DEFAULT 1
-    );
-  SQL
-  stmt.execute
-  stmt.close
-
   get '/' do
-    @assets = db.execute( "SELECT * FROM assets" )
+    @assets = DB.execute( "SELECT * FROM assets" )
 
     erb :index
   end
@@ -33,13 +15,13 @@ class AssetsTracker < Sinatra::Base
   end
 
   get '/assets/:id/edit' do
-    @asset = db.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
+    @asset = DB.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
 
     erb :edit
   end
 
   get '/assets/:id' do
-    @asset = db.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
+    @asset = DB.get_first_row "SELECT * FROM assets WHERE id = ?", params[:id]
 
     erb :asset
   end
@@ -49,7 +31,7 @@ class AssetsTracker < Sinatra::Base
       INSERT INTO assets (type, serial_number)
       VALUES (?, ?)
     SQL
-    db.execute query, [
+    DB.execute query, [
       params['type'].capitalize,
       params['serial-number'].upcase
     ]
@@ -58,7 +40,7 @@ class AssetsTracker < Sinatra::Base
   end
 
   put '/assets/:id' do
-    stmt = db.prepare <<-SQL
+    stmt = DB.prepare <<-SQL
       UPDATE assets
       SET
         type = ?,
@@ -72,7 +54,7 @@ class AssetsTracker < Sinatra::Base
   end
 
   delete '/assets/:id' do
-    db.execute "DELETE FROM assets WHERE id = ?", params['id']
+    DB.execute "DELETE FROM assets WHERE id = ?", params['id']
 
     redirect "/"
   end
