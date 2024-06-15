@@ -8,8 +8,8 @@ module Migrations
         type          VARCHAR(80) NOT NULL,
         available     BOOLEAN DEFAULT 1,
         user_id       INTEGER REFERENCES users(id) ON DELETE NO ACTION,
-        created_at    INTEGER NOT NULL DEFAULT (unixepoch()),
-        updated_at    INTEGER NOT NULL DEFAULT (unixepoch())
+        created_at    INTEGER NOT NULL DEFAULT (unixepoch('now', 'localtime')),
+        updated_at    INTEGER NOT NULL DEFAULT (unixepoch('now', 'localtime'))
       );
       SQL
       @db.execute query
