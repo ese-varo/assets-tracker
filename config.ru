@@ -1,9 +1,9 @@
 require 'bundler'
+require_relative 'controllers/application_controller'
+require_relative 'controllers/assets_controller'
 
 Bundler.require
 
-require 'rack/unreloader'
-Unreloader = Rack::Unreloader.new(:subclasses=>%w'Sinatra::Base'){AssetsTracker}
-Unreloader.require './app.rb'
-
-run Unreloader
+use Rack::MethodOverride
+use AssetsController
+run ApplicationController
