@@ -1,31 +1,26 @@
-require 'sinatra'
-require_relative 'config/environment'
-
-class AssetsTracker < Sinatra::Base
-  use Rack::MethodOverride
-
+class AssetsController < ApplicationController
   get '/' do
     @assets = DB.execute( "SELECT * FROM assets" )
 
-    erb :index
+    erb :'assets/index'
   end
 
   get '/assets/new' do
-    erb :new
+    erb :'assets/new'
   end
 
   get '/assets/:id/edit' do
     @asset = DB.get_first_row(
       "SELECT * FROM assets WHERE id = ?", params[:id])
 
-    erb :edit
+    erb :'assets/edit'
   end
 
   get '/assets/:id' do
     @asset = DB.get_first_row(
       "SELECT * FROM assets WHERE id = ?", params[:id])
 
-    erb :asset
+    erb :'assets/asset'
   end
 
   post '/assets' do
