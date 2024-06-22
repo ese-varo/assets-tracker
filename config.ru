@@ -1,9 +1,17 @@
 require 'bundler'
 
+require_relative 'lib/authentication'
+# load main app controller file
+require_relative 'controllers/application_controller'
+
+# load the rest of the controllers
+Dir['./controllers/*.rb'].each do |file|
+  require file unless file.match(/application_controller/)
+end
+
 Bundler.require
 
-require 'rack/unreloader'
-Unreloader = Rack::Unreloader.new(:subclasses=>%w'Sinatra::Base'){AssetsTracker}
-Unreloader.require './app.rb'
-
-run Unreloader
+use Rack::MethodOverride
+use ApplicationController
+map('/assets') { run AssetsController }
+map('/') { run UsersController }
