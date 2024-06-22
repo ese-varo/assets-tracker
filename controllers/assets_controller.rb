@@ -1,29 +1,30 @@
 class AssetsController < ApplicationController
+  before do
+    authenticate!
+  end
+
   get '/' do
     @assets = DB.execute( "SELECT * FROM assets" )
-
     erb :'assets/index'
   end
 
-  get '/assets/new' do
+  get '/new' do
     erb :'assets/new'
   end
 
-  get '/assets/:id/edit' do
+  get '/:id/edit' do
     @asset = DB.get_first_row(
       "SELECT * FROM assets WHERE id = ?", params[:id])
-
     erb :'assets/edit'
   end
 
-  get '/assets/:id' do
+  get '/:id' do
     @asset = DB.get_first_row(
       "SELECT * FROM assets WHERE id = ?", params[:id])
-
     erb :'assets/asset'
   end
 
-  post '/assets' do
+  post '/' do
     query = <<-SQL
       INSERT INTO assets (type, serial_number)
       VALUES (?, ?)
@@ -33,10 +34,10 @@ class AssetsController < ApplicationController
       params['serial-number'].upcase
     ]
 
-    redirect '/'
+    redirect '/assets'
   end
 
-  put '/assets/:id' do
+  put '/:id' do
     stmt = DB.prepare <<-SQL
       UPDATE assets
       SET
@@ -46,13 +47,11 @@ class AssetsController < ApplicationController
       WHERE id = ?
     SQL
     stmt.execute params['type'], params['serial_number'], params['id']
-
     redirect "/assets/#{params['id']}"
   end
 
-  delete '/assets/:id' do
+  delete '/:id' do
     DB.execute "DELETE FROM assets WHERE id = ?", params['id']
-
-    redirect "/"
+    redirect "/assets"
   end
 end

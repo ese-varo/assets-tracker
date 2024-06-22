@@ -1,9 +1,17 @@
 require 'bundler'
+
+require_relative 'lib/authentication'
+# load main app controller file
 require_relative 'controllers/application_controller'
-require_relative 'controllers/assets_controller'
+
+# load the rest of the controllers
+Dir['./controllers/*.rb'].each do |file|
+  require file unless file.match(/application_controller/)
+end
 
 Bundler.require
 
 use Rack::MethodOverride
-use AssetsController
-run ApplicationController
+use ApplicationController
+map('/assets') { run AssetsController }
+map('/') { run UsersController }
