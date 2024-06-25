@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
+# Handles all assets related requests
 class AssetsController < ApplicationController
   before do
     authenticate!
   end
 
   get '/' do
-    @assets = DB.execute( "SELECT * FROM assets" )
+    @assets = DB.execute('SELECT * FROM assets')
     erb :'assets/index'
   end
 
@@ -13,14 +16,14 @@ class AssetsController < ApplicationController
   end
 
   get '/:id/edit' do
-    @asset = DB.get_first_row(
-      "SELECT * FROM assets WHERE id = ?", params[:id])
+    @asset =
+      DB.get_first_row('SELECT * FROM assets WHERE id = ?', params[:id])
     erb :'assets/edit'
   end
 
   get '/:id' do
-    @asset = DB.get_first_row(
-      "SELECT * FROM assets WHERE id = ?", params[:id])
+    @asset =
+      DB.get_first_row('SELECT * FROM assets WHERE id = ?', params[:id])
     erb :'assets/asset'
   end
 
@@ -51,7 +54,7 @@ class AssetsController < ApplicationController
   end
 
   delete '/:id' do
-    DB.execute "DELETE FROM assets WHERE id = ?", params['id']
-    redirect "/assets"
+    DB.execute 'DELETE FROM assets WHERE id = ?', params['id']
+    redirect '/assets'
   end
 end
