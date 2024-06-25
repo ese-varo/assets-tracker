@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Migrations
   class CreateAssets < Migration
     def up
@@ -13,9 +15,6 @@ module Migrations
       );
       SQL
       @db.execute query
-    end
-
-    def down
     end
   end
 end

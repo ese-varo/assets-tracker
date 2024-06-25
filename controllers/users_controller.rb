@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'bcrypt'
 
+# Handles all users and authentication related requests
 class UsersController < ApplicationController
   before do
     pass if %w[login signup logout].include? request.path_info.split('/')[1]
@@ -12,7 +15,7 @@ class UsersController < ApplicationController
   end
 
   post '/login' do
-    query = "SELECT * FROM users WHERE username = ?"
+    query = 'SELECT * FROM users WHERE username = ?'
     @user = DB.get_first_row query, params['username']
     if @user && valid_password?(@user['password_hash'], params['password'])
       original_request = session[:original_request]
@@ -62,12 +65,10 @@ class UsersController < ApplicationController
     end
 
     def current_user
-      if session[:user_id]
-        query = "SELECT * FROM users WHERE id = ?"
-        @user ||= DB.get_first_row query, session[:user_id]
-      else
-        nil
-      end
+      return unless session[:user_id]
+
+      query = 'SELECT * FROM users WHERE id = ?'
+      @current_user ||= DB.get_first_row query, session[:user_id]
     end
   end
 end

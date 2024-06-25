@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require 'sqlite3'
 require 'singleton'
 
+# Singleton class to handle the connection to db
 class DatabaseConnection
   include Singleton
 
