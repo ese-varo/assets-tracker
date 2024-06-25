@@ -37,3 +37,8 @@ task :generate_migration, [:name] do |t, args|
   file.write migration_template(args[:name])
   file.close
 end
+
+desc 'Database setup'
+task :db_setup do
+  ruby 'db/setup.rb'
+end
