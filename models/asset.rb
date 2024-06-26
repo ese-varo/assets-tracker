@@ -16,7 +16,7 @@ class Asset
       )
     end
 
-    def create(type, serial_number, user_id)
+    def create!(type, serial_number, user_id)
       query = <<-SQL
         INSERT INTO assets (type, serial_number, user_id)
         VALUES (?, ?, ?)

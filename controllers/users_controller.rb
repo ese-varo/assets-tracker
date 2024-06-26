@@ -41,7 +41,12 @@ class UsersController < ApplicationController
   end
 
   post '/signup' do
-    User.create(**params_slice_with_sym_keys(
+    @errors = []
+    unless params['password'] == params['password_confirmation']
+      @errors << "Passwords doesn't match"
+      return erb :'users/signup'
+    end
+    User.create!(**params_slice_with_sym_keys(
       :username, :email, :employee_id, :password
     ))
 
