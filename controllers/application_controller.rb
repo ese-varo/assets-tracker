@@ -19,4 +19,11 @@ class ApplicationController < Sinatra::Base
     set :session_store, Rack::Session::Pool
     set :session_secret, ENV.fetch('SESSION_SECRET') { SecureRandom.hex(64) }
   end
+
+  helpers do
+    # return specified params with keys as symbols
+    def params_slice_with_sym_keys(*keys)
+      params.slice(*keys).to_h.transform_keys(&:to_sym)
+    end
+  end
 end
