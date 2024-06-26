@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../models/asset'
+
 # Handles all assets related requests
 class AssetsController < ApplicationController
   before do
@@ -7,7 +9,7 @@ class AssetsController < ApplicationController
   end
 
   get '/' do
-    @assets = DB.execute('SELECT * FROM assets')
+    @assets = Asset.all
     erb :'assets/index'
   end
 
@@ -16,45 +18,27 @@ class AssetsController < ApplicationController
   end
 
   get '/:id/edit' do
-    @asset =
-      DB.get_first_row('SELECT * FROM assets WHERE id = ?', params[:id])
+    @asset = Asset.find(params[:id])
     erb :'assets/edit'
   end
 
   get '/:id' do
-    @asset =
-      DB.get_first_row('SELECT * FROM assets WHERE id = ?', params[:id])
+    @asset = Asset.find(params[:id])
     erb :'assets/asset'
   end
 
   post '/' do
-    query = <<-SQL
-      INSERT INTO assets (type, serial_number)
-      VALUES (?, ?)
-    SQL
-    DB.execute query, [
-      params['type'].capitalize,
-      params['serial-number'].upcase
-    ]
-
+    Asset.create(params['type'], params['serial_number'])
     redirect '/assets'
   end
 
   put '/:id' do
-    stmt = DB.prepare <<-SQL
-      UPDATE assets
-      SET
-        type = ?,
-        serial_number = ?,
-        updated_at = (unixepoch('now', 'localtime'))
-      WHERE id = ?
-    SQL
-    stmt.execute params['type'], params['serial_number'], params['id']
+    Asset.update(**params_slice_with_sym_keys(:id, :type, :serial_number))
     redirect "/assets/#{params['id']}"
   end
 
   delete '/:id' do
-    DB.execute 'DELETE FROM assets WHERE id = ?', params['id']
+    Asset.delete(params['id'])
     redirect '/assets'
   end
 end

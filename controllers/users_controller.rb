@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'bcrypt'
+require_relative '../models/user'
 
 # Handles all users and authentication related requests
 class UsersController < ApplicationController
@@ -15,8 +16,7 @@ class UsersController < ApplicationController
   end
 
   post '/login' do
-    query = 'SELECT * FROM users WHERE username = ?'
-    @user = DB.get_first_row query, params['username']
+    @user = User.find_by_username(params['username'])
     if @user && valid_password?(@user['password_hash'], params['password'])
       original_request = session[:original_request]
       session.clear
@@ -41,25 +41,14 @@ class UsersController < ApplicationController
   end
 
   post '/signup' do
-    query = <<-SQL
-      INSERT INTO users (username, email, employee_id, password_hash)
-      VALUES (?, ?, ?, ?)
-    SQL
-    DB.execute query, [
-      params['username'],
-      params['email'],
-      params['employee_id'],
-      hash_password(params['password'])
-    ]
+    User.create(**params_slice_with_sym_keys(
+      :username, :email, :employee_id, :password
+    ))
 
     redirect '/login'
   end
 
   helpers do
-    def hash_password(password)
-      BCrypt::Password.create(password)
-    end
-
     def valid_password?(password_hash, password)
       BCrypt::Password.new(password_hash) == password
     end
@@ -67,8 +56,7 @@ class UsersController < ApplicationController
     def current_user
       return unless session[:user_id]
 
-      query = 'SELECT * FROM users WHERE id = ?'
-      @current_user ||= DB.get_first_row query, session[:user_id]
+      @current_user ||= User.find(session[:user_id])
     end
   end
 end
