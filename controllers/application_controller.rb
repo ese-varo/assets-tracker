@@ -17,7 +17,7 @@ class ApplicationController < Sinatra::Base
     enable :sessions
     set :sessions, expire_after: 86_400 # in seconds 1 day
     set :session_store, Rack::Session::Pool
-    set :session_secret, ENV.fetch('SESSION_SECRET') { SecureRandom.hex(64) }
+    set :session_secret, ENV['SESSION_SECRET'] { SecureRandom.hex(64) }
   end
 
   helpers do

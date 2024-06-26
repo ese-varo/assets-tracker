@@ -4,6 +4,7 @@ GEM
     ast (2.4.2)
     base64 (0.2.0)
     bcrypt (3.1.20)
+    dotenv (3.1.2)
     ffi (1.17.0)
     ffi (1.17.0-x86_64-linux-gnu)
     json (2.7.2)
@@ -75,6 +76,7 @@ PLATFORMS
 
 DEPENDENCIES
   bcrypt (~> 3.1, >= 3.1.20)
+  dotenv (~> 3.1, >= 3.1.2)
   puma (~> 6.4, >= 6.4.2)
   rackup (~> 2.1)
   rerun (~> 0.14.0)
