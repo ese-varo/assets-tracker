@@ -9,7 +9,7 @@ class AssetsController < ApplicationController
   end
 
   get '/' do
-    @assets = Asset.all
+    @assets = Asset.find_by_user_id(current_user['id'])
     erb :'assets/index'
   end
 
@@ -18,27 +18,31 @@ class AssetsController < ApplicationController
   end
 
   get '/:id/edit' do
-    @asset = Asset.find(params[:id])
+    @asset = Asset.find(params[:id], current_user['id'])
     erb :'assets/edit'
   end
 
   get '/:id' do
-    @asset = Asset.find(params[:id])
+    @asset = Asset.find(params[:id], current_user['id'])
     erb :'assets/asset'
   end
 
   post '/' do
-    Asset.create(params['type'], params['serial_number'])
+    Asset.create(
+      params['type'], params['serial_number'], current_user['id']
+    )
     redirect '/assets'
   end
 
   put '/:id' do
-    Asset.update(**params_slice_with_sym_keys(:id, :type, :serial_number))
+    data = params_slice_with_sym_keys(:id, :type, :serial_number)
+    data[:user_id] = current_user['id']
+    Asset.update(**data)
     redirect "/assets/#{params['id']}"
   end
 
   delete '/:id' do
-    Asset.delete(params['id'])
+    Asset.delete(params['id'], current_user['id'])
     redirect '/assets'
   end
 end

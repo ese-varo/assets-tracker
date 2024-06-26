@@ -21,6 +21,12 @@ class ApplicationController < Sinatra::Base
   end
 
   helpers do
+    def current_user
+      return unless session[:user_id]
+
+      @current_user ||= User.find(session[:user_id])
+    end
+
     # return specified params with keys as symbols
     def params_slice_with_sym_keys(*keys)
       params.slice(*keys).to_h.transform_keys(&:to_sym)
