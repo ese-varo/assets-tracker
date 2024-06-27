@@ -4,6 +4,9 @@ require 'sinatra/base'
 require 'securerandom'
 require_relative '../config/environment'
 
+# custom asset not found error class
+class AssetNotFound < Sinatra::NotFound; end
+
 # Main app controller. All controllers inherit from this one.
 # It adds basic configuration and functionality needed in the controllers
 class ApplicationController < Sinatra::Base
@@ -18,6 +21,26 @@ class ApplicationController < Sinatra::Base
     set :sessions, expire_after: 86_400 # in seconds 1 day
     set :session_store, Rack::Session::Pool
     set :session_secret, ENV['SESSION_SECRET'] { SecureRandom.hex(64) }
+  end
+
+  configure :development do
+    # set :show_exceptions, :after_handler
+    set :show_exceptions, false
+  end
+
+  not_found do
+    # TODO: general not_found template
+    "This is nowhere to be found - #{env['sinatra.error'].message}"
+  end
+
+  error AssetNotFound do
+    # TODO: custom asset not found template => erb :not_found_asset
+    halt 404, 'NotFound: asset not found'
+  end
+
+  error do
+    "Sorry there was an error - #{env['sinatra.error'].message}"
+    # TODO: create error template
   end
 
   helpers do
