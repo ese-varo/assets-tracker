@@ -19,16 +19,20 @@ class AssetsController < ApplicationController
 
   get '/:id/edit' do
     @asset = Asset.find(params[:id], current_user['id'])
+    raise AssetNotFound unless @asset
+
     erb :'assets/edit'
   end
 
   get '/:id' do
     @asset = Asset.find(params[:id], current_user['id'])
+    raise AssetNotFound unless @asset
+
     erb :'assets/asset'
   end
 
   post '/' do
-    Asset.create(
+    Asset.create!(
       params['type'], params['serial_number'], current_user['id']
     )
     redirect '/assets'
