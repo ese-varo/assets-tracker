@@ -2,7 +2,6 @@
 
 require_relative '../models/asset'
 
-# Handles all assets related requests
 class AssetsController < ApplicationController
   before do
     authenticate!
@@ -32,17 +31,25 @@ class AssetsController < ApplicationController
   end
 
   post '/' do
-    Asset.create!(
-      params['type'], params['serial_number'], current_user['id']
-    )
+    data = params_slice_with_sym_keys(:type, :serial_number)
+    data[:user_id] = current_user['id']
+
+    @asset = Asset.create(**data)
     redirect '/assets'
+  rescue AssetValidationError => e
+    @errors = e.errors
+    erb :'/assets/new'
   end
 
   put '/:id' do
-    data = params_slice_with_sym_keys(:id, :type, :serial_number)
-    data[:user_id] = current_user['id']
-    Asset.update(**data)
+    data = params_slice_with_sym_keys(:type, :serial_number)
+
+    @asset = Asset.find(params[:id], current_user['id'])
+    @asset.update(**data)
     redirect "/assets/#{params['id']}"
+  rescue AssetValidationError => e
+    @errors = e.errors
+    erb :'/assets/edit'
   end
 
   delete '/:id' do

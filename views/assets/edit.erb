@@ -1,8 +1,11 @@
 <h1>Edit asset</h1>
-<form action="/assets/<%= @asset['id'] %>" method="post">
+<% @errors&.each do |error| %>
+  <p><%= error %></p>
+<% end %>
+<form action="/assets/<%= @asset.id %>" method="post">
   <input type="hidden" name="_method" value="put">
-  Type: <input type="text" name="type" value="<%= @asset['type'] %>">
-  Serial number: <input type="text" name="serial_number" value="<%= @asset['serial_number'] %>">
+  Type: <input type="text" name="type" value="<%= @asset.type %>">
+  Serial number: <input type="text" name="serial_number" value="<%= @asset.serial_number %>">
 
   <input type="submit" value="submit">
 </form>

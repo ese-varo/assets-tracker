@@ -4,7 +4,6 @@ require 'sinatra/base'
 require 'securerandom'
 require_relative '../config/environment'
 
-# custom asset not found error class
 class AssetNotFound < Sinatra::NotFound; end
 
 # Main app controller. All controllers inherit from this one.
@@ -24,12 +23,12 @@ class ApplicationController < Sinatra::Base
   end
 
   configure :development do
-    # set :show_exceptions, :after_handler
-    set :show_exceptions, false
+    set :show_exceptions, :after_handler
+    # set :show_exceptions, false
   end
 
   not_found do
-    # TODO: general not_found template
+    # TODO: generic not_found template
     "This is nowhere to be found - #{env['sinatra.error'].message}"
   end
 
