@@ -17,14 +17,14 @@ class AssetsController < ApplicationController
   end
 
   get '/:id/edit' do
-    @asset = Asset.find(params[:id], current_user['id'])
+    @asset = Asset.find_by_id(params[:id], current_user['id'])
     raise AssetNotFound unless @asset
 
     erb :'assets/edit'
   end
 
   get '/:id' do
-    @asset = Asset.find(params[:id], current_user['id'])
+    @asset = Asset.find_by_id(params[:id], current_user['id'])
     raise AssetNotFound unless @asset
 
     erb :'assets/asset'
@@ -44,7 +44,7 @@ class AssetsController < ApplicationController
   put '/:id' do
     data = params_slice_with_sym_keys(:type, :serial_number)
 
-    @asset = Asset.find(params[:id], current_user['id'])
+    @asset = Asset.find_by_id(params[:id], current_user['id'])
     @asset.update(**data)
     redirect "/assets/#{params['id']}"
   rescue AssetValidationError => e
