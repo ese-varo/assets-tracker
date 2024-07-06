@@ -11,8 +11,11 @@
 Metrics/MethodLength:
   Exclude:
     - 'db/migrations/*'
-  AllowedMethods: ['update']
+  AllowedMethods: ['update', 'find_by']
   Max: 10
+
+Metrics/ClassLength:
+  CountAsOne: ['method_call']
 
 Metrics/ParameterLists:
   CountKeywordArgs: false

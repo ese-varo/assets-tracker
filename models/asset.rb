@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'base'
+
 class AssetValidationError < StandardError
   attr_reader :errors
 
@@ -10,7 +12,7 @@ class AssetValidationError < StandardError
 end
 
 # Handle interaction with database and model functionality
-class Asset
+class Asset < Base
   attr_reader :id, :updated_at, :created_at, :type,
               :serial_number, :user_id, :available
 
@@ -101,25 +103,26 @@ class Asset
       asset
     end
 
-    def find_by_user_id(user_id)
-      DB.execute(
-        'SELECT * FROM assets WHERE user_id = ?', user_id
-      )
-    end
-
-    def find(id, user_id)
-      asset = DB.get_first_row(
-        'SELECT * FROM assets WHERE id = ? AND user_id = ?',
-        [id, user_id]
-      )
-      new(**asset.transform_keys(&:to_sym))
-    end
-
     def delete(id, user_id)
       DB.execute(
         'DELETE FROM assets WHERE id = ? AND user_id = ?',
         [id, user_id]
       )
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      /^find_by_(?<prop>.*)/ =~ name
+      find_by_methods.include?(prop) || super
+    end
+
+    private
+
+    def find_by_methods
+      %w[serial_number user_id]
+    end
+
+    def table_name
+      'assets'
     end
   end
 end

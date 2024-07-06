@@ -17,10 +17,10 @@ class UsersController < ApplicationController
 
   post '/login' do
     @user = User.find_by_username(params['username'])
-    if @user && valid_password?(@user['password_hash'], params['password'])
+    if @user && valid_password?(@user.password_hash, params['password'])
       original_request = session[:original_request]
       session.clear
-      session[:user_id] = @user['id']
+      session[:user_id] = @user.id
 
       redirect to(original_request) if original_request
       redirect '/assets'
