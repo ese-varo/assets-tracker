@@ -8,7 +8,7 @@ class AssetsController < ApplicationController
   end
 
   get '/' do
-    @assets = Asset.find_by_user_id(current_user['id'])
+    @assets = Asset.find_by_user_id(current_user.id, as_collection: true)
     erb :'assets/index'
   end
 
@@ -17,22 +17,22 @@ class AssetsController < ApplicationController
   end
 
   get '/:id/edit' do
-    @asset = Asset.find_by_id(params[:id], current_user['id'])
-    raise AssetNotFound unless @asset
+    @asset = Asset.find_by_id(params[:id])
+    raise AssetNotFound unless belongs_to_current_user(@asset)
 
     erb :'assets/edit'
   end
 
   get '/:id' do
-    @asset = Asset.find_by_id(params[:id], current_user['id'])
-    raise AssetNotFound unless @asset
+    @asset = Asset.find_by_id(params[:id])
+    raise AssetNotFound unless belongs_to_current_user(@asset)
 
     erb :'assets/asset'
   end
 
   post '/' do
     data = params_slice_with_sym_keys(:type, :serial_number)
-    data[:user_id] = current_user['id']
+    data[:user_id] = current_user.id
 
     @asset = Asset.create(**data)
     redirect '/assets'
@@ -44,7 +44,7 @@ class AssetsController < ApplicationController
   put '/:id' do
     data = params_slice_with_sym_keys(:type, :serial_number)
 
-    @asset = Asset.find_by_id(params[:id], current_user['id'])
+    @asset = Asset.find_by_id(params[:id])
     @asset.update(**data)
     redirect "/assets/#{params['id']}"
   rescue AssetValidationError => e
@@ -53,7 +53,13 @@ class AssetsController < ApplicationController
   end
 
   delete '/:id' do
-    Asset.delete(params['id'], current_user['id'])
+    Asset.delete(params['id'], current_user.id)
     redirect '/assets'
+  end
+
+  helpers do
+    def belongs_to_current_user(asset)
+      asset&.user_id == current_user.id
+    end
   end
 end

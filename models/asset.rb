@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'base'
+
 class AssetValidationError < StandardError
   attr_reader :errors
 
@@ -10,7 +12,7 @@ class AssetValidationError < StandardError
 end
 
 # Handle interaction with database and model functionality
-class Asset
+class Asset < Base
   attr_reader :id, :updated_at, :created_at, :type,
               :serial_number, :user_id, :available
 
@@ -108,46 +110,19 @@ class Asset
       )
     end
 
-    def find_by(prop, *params)
-      value = params.first
-      user_id = params.last
-      if prop.to_s == 'user_id'
-        raise ArgumentError, 'Missing arguments: user_id is required' if params.empty?
-
-        hash_collection = DB.execute('SELECT * FROM assets WHERE user_id = ?', user_id)
-        build_from_hash_collection(hash_collection)
-      else
-        raise ArgumentError, 'Missing arguments: property value and user_id are required' if params.length < 2
-
-        asset_hash = DB.get_first_row(
-          "SELECT * FROM assets WHERE #{prop} = ? AND user_id = ?",
-          [value, user_id]
-        )
-        build_from_hash(asset_hash)
-      end
-    end
-
-    def build_from_hash_collection(hash_collection)
-      hash_collection.map { |asset| build_from_hash(asset) }
-    end
-
-    def build_from_hash(asset_hash)
-      new(**asset_hash.transform_keys(&:to_sym))
-    end
-
-    def method_missing(name, *params)
-      if /^find_by_(?<prop>.*)/ =~ name
-        find_by(prop, *params)
-      else
-        super
-      end
-    end
-
     def respond_to_missing?(name, include_private = false)
-      # only enable find_by: serial_number, id and user_id methods
-      find_by_methods = %w[id serial_number user_id]
       /^find_by_(?<prop>.*)/ =~ name
       find_by_methods.include?(prop) || super
+    end
+
+    private
+
+    def find_by_methods
+      %w[serial_number user_id]
+    end
+
+    def table_name
+      'assets'
     end
   end
 end
