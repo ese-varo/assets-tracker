@@ -8,11 +8,14 @@
 # where the inspected file is and continue its way up to the root directory.
 #
 # See https://docs.rubocop.org/rubocop/configuration
+Lint/MissingSuper:
+  AllowedParentClasses: [Base]
+
 Metrics/MethodLength:
   Exclude:
     - 'db/migrations/*'
-  AllowedMethods: ['update', 'find_by']
   Max: 10
+  CountAsOne: ['method_call']
 
 Metrics/ClassLength:
   CountAsOne: ['method_call']
@@ -30,3 +33,6 @@ Style/Documentation:
     'AssetsController',
     'DatabaseConnection'
   ]
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either_consistent

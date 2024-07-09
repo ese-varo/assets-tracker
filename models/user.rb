@@ -14,7 +14,7 @@ class User < Base
   EMPLOYEE_ID_FORMAT_REGEX = /^[a-zA-Z0-9]+$/
 
   def initialize(
-    id: nil, username:, email:, employee_id:,
+    username:, email:, employee_id:, id: nil,
     password_hash: nil, created_at: nil, updated_at: nil
   )
     @id = id

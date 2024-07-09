@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# class to handle model validation errors
 class ValidationError < StandardError
   attr_reader :errors
 
@@ -9,6 +10,7 @@ class ValidationError < StandardError
   end
 end
 
+# Handle common functionlaity for models
 class Base
   private
 
@@ -44,7 +46,7 @@ class Base
     end
 
     def valid_find_by_method?(prop)
-      self.respond_to?("find_by_#{prop}")
+      respond_to?("find_by_#{prop}")
     end
 
     def find_by(prop, *params, as_collection: false)

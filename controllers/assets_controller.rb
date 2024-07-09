@@ -18,14 +18,14 @@ class AssetsController < ApplicationController
 
   get '/:id/edit' do
     @asset = Asset.find_by_id(params[:id])
-    raise AssetNotFound unless belongs_to_current_user(@asset)
+    raise AssetNotFound unless belongs_to_current_user?(@asset)
 
     haml :'assets/edit'
   end
 
   get '/:id' do
     @asset = Asset.find_by_id(params[:id])
-    raise AssetNotFound unless belongs_to_current_user(@asset)
+    raise AssetNotFound unless belongs_to_current_user?(@asset)
 
     haml :'assets/asset'
   end
@@ -58,7 +58,7 @@ class AssetsController < ApplicationController
   end
 
   helpers do
-    def belongs_to_current_user(asset)
+    def belongs_to_current_user?(asset)
       asset&.user_id == current_user.id
     end
   end
