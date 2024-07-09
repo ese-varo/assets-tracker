@@ -49,8 +49,10 @@ class UsersController < ApplicationController
     User.create!(**params_slice_with_sym_keys(
       :username, :email, :employee_id, :password
     ))
-
     redirect '/login'
+  rescue UserValidationError => e
+    @errors = e.errors
+    haml :'users/signup'
   end
 
   helpers do

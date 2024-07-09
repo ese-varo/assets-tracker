@@ -2,14 +2,7 @@
 
 require_relative 'base'
 
-class AssetValidationError < StandardError
-  attr_reader :errors
-
-  def initialize(errors, generic_message)
-    super(generic_message)
-    @errors = errors
-  end
-end
+class AssetValidationError < ValidationError; end
 
 # Handle interaction with database and model functionality
 class Asset < Base
@@ -26,11 +19,11 @@ class Asset < Base
     @id = id
     @updated_at = updated_at
     @created_at = created_at
-    self.type = type.capitalize
-    self.serial_number = serial_number.upcase
+    self.type = type
+    self.serial_number = serial_number
     @user_id = user_id
     @available = available
-    @validation_errors = []
+    @errors = []
   end
 
   def type=(value)
@@ -44,12 +37,11 @@ class Asset < Base
   def validate
     validate_type
     validate_serial_number
-    @validation_errors.empty?
+    @errors.empty?
   end
 
   def save!
-    err_msg = 'Error on save'
-    raise AssetValidationError.new(@validation_errors, err_msg) unless validate
+    raise AssetValidationError.new(@errors, save_err) unless validate
 
     query = <<-SQL
       INSERT INTO assets (type, serial_number, user_id)
@@ -57,15 +49,14 @@ class Asset < Base
     SQL
     DB.execute query, [type, serial_number, user_id]
   rescue SQLite3::Exception => e
-    @validation_errors << e.message
-    raise AssetValidationError.new(@validation_errors, err_msg)
+    @errors << e.message
+    raise AssetValidationError.new(@errors, save_err)
   end
 
   def update(type:, serial_number:)
-    err_msg = 'Error on update'
     self.type = type
     self.serial_number = serial_number
-    raise AssetValidationError.new(@validation_errors, err_msg) unless validate
+    raise AssetValidationError.new(@errors, update_err) unless validate
 
     stmt = DB.prepare <<-SQL
       UPDATE assets
@@ -78,8 +69,8 @@ class Asset < Base
     SQL
     stmt.execute type, serial_number, id, user_id
   rescue SQLite3::Exception => e
-    @validation_errors << e.message
-    raise AssetValidationError.new(@validation_errors, err_msg)
+    @errors << e.message
+    raise AssetValidationError.new(@errors, update_err)
   end
 
   private
@@ -87,13 +78,13 @@ class Asset < Base
   def validate_type
     return if type.match? TYPE_FORMAT_REGEX
 
-    @validation_errors << 'Type can only contain letters and hyphens'
+    @errors << 'Type can only contain letters and hyphens'
   end
 
   def validate_serial_number
     return if serial_number.match? SERIAL_NUMBER_FORMAT_REGEX
 
-    @validation_errors << 'Serial number can only contain letters and numbers'
+    @errors << 'Serial number can only contain letters and numbers'
   end
 
   class << self

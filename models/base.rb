@@ -1,6 +1,25 @@
 # frozen_string_literal: true
 
+class ValidationError < StandardError
+  attr_reader :errors
+
+  def initialize(errors, generic_message)
+    super(generic_message)
+    @errors = errors
+  end
+end
+
 class Base
+  private
+
+  def save_err
+    "Error while saving #{self.class}"
+  end
+
+  def update_err
+    "Error while updating #{self.class}"
+  end
+
   class << self
     def method_missing(name, *params, **key_params)
       if /^find_by_(?<prop>.*)/ =~ name
