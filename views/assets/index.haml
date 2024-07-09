@@ -1,0 +1,29 @@
+%h1 Assets Listing
+%form{action: "/logout", method: "post"}
+  %button{type: "submit"} Logout
+%a{href: "/assets/new"} Add new asset
+%ul
+  - @assets.each do |a|
+    - available = a.available == 1 ? true : false
+    %li
+      %p
+        Asset Type: #{a.type}
+        %br/
+        Serial Number: #{a.serial_number}
+        %br/
+        Available: #{available ? 'Yes' : 'No'}
+        %br/
+        - unless available
+          User: #{a.username}
+        %form{
+          action: "/assets/#{a.id}",
+          method: "post",
+          style: "display: inline;"
+        }
+          %input{type: "hidden", name: "_method", value: "delete"}
+          %button{type: "submit"} Delete
+        %form{
+          action: "/assets/#{a.id}/edit",
+          style: "display: inline;"
+        }
+          %button{type: "submit"} Edit

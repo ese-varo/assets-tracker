@@ -9,25 +9,25 @@ class AssetsController < ApplicationController
 
   get '/' do
     @assets = Asset.find_by_user_id(current_user.id, as_collection: true)
-    erb :'assets/index'
+    haml :'assets/index'
   end
 
   get '/new' do
-    erb :'assets/new'
+    haml :'assets/new'
   end
 
   get '/:id/edit' do
     @asset = Asset.find_by_id(params[:id])
     raise AssetNotFound unless belongs_to_current_user(@asset)
 
-    erb :'assets/edit'
+    haml :'assets/edit'
   end
 
   get '/:id' do
     @asset = Asset.find_by_id(params[:id])
     raise AssetNotFound unless belongs_to_current_user(@asset)
 
-    erb :'assets/asset'
+    haml :'assets/asset'
   end
 
   post '/' do
@@ -38,7 +38,7 @@ class AssetsController < ApplicationController
     redirect '/assets'
   rescue AssetValidationError => e
     @errors = e.errors
-    erb :'/assets/new'
+    haml :'/assets/new'
   end
 
   put '/:id' do
@@ -49,7 +49,7 @@ class AssetsController < ApplicationController
     redirect "/assets/#{params['id']}"
   rescue AssetValidationError => e
     @errors = e.errors
-    erb :'/assets/edit'
+    haml :'/assets/edit'
   end
 
   delete '/:id' do

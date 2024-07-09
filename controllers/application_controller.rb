@@ -13,6 +13,7 @@ class ApplicationController < Sinatra::Base
 
   configure do
     set :views, File.expand_path('../views', __dir__)
+    set :haml, :format => :html5
 
     enable :admin_access
 

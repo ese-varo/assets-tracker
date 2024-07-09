@@ -12,7 +12,7 @@ class UsersController < ApplicationController
 
   get '/login' do
     redirect '/assets' if authorized?
-    erb :'users/login'
+    haml :'users/login'
   end
 
   post '/login' do
@@ -26,7 +26,7 @@ class UsersController < ApplicationController
       redirect '/assets'
     else
       @error = 'Incorrect authentication credentials'
-      erb :'/users/login'
+      haml :'/users/login'
     end
   end
 
@@ -37,14 +37,14 @@ class UsersController < ApplicationController
 
   get '/signup' do
     redirect back if authorized?
-    erb :'users/signup'
+    haml :'users/signup'
   end
 
   post '/signup' do
     @errors = []
     unless params['password'] == params['password_confirmation']
       @errors << "Passwords doesn't match"
-      return erb :'users/signup'
+      return haml :'users/signup'
     end
     User.create!(**params_slice_with_sym_keys(
       :username, :email, :employee_id, :password

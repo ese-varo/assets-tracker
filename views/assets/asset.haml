@@ -1,0 +1,20 @@
+%h1 Asset
+%a{href: "/assets"} Go home
+%p
+  - available = @asset.available == 1 ? true : false
+  Asset Type:
+  = @asset.type
+  %br/
+  Serial Number:
+  = @asset.serial_number
+  %br/
+  Available:
+  = available ? 'Yes' : 'No'
+  %br/
+  - unless available
+    User:
+    = @asset.username
+  Last time updated:
+  = Time.at(@asset.updated_at).strftime('%F')
+%form{action: "/assets/#{@asset.id}/edit"}
+  %button{type: "submit"} Edit

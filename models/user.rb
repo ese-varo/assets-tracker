@@ -20,7 +20,7 @@ class User < Base
   end
 
   class << self
-    def create(username:, email:, employee_id:, password:)
+    def create!(username:, email:, employee_id:, password:)
       query = <<-SQL
         INSERT INTO users (username, email, employee_id, password_hash)
         VALUES (?, ?, ?, ?)
