@@ -29,18 +29,15 @@ class ApplicationController < Sinatra::Base
   end
 
   not_found do
-    # TODO: generic not_found template
     "This is nowhere to be found - #{env['sinatra.error'].message}"
   end
 
   error AssetNotFound do
-    # TODO: custom asset not found template => erb :not_found_asset
     halt 404, 'NotFound: asset not found'
   end
 
   error do
     "Sorry there was an error - #{env['sinatra.error'].message}"
-    # TODO: create error template
   end
 
   helpers do
@@ -53,6 +50,10 @@ class ApplicationController < Sinatra::Base
     # return specified params with keys as symbols
     def params_slice_with_sym_keys(*keys)
       params.slice(*keys).to_h.transform_keys(&:to_sym)
+    end
+
+    def partial(template, locals = {})
+      haml(:"partials/#{template}", locals: locals)
     end
   end
 end
