@@ -1,23 +1,27 @@
 %h1 Signup
 - @errors&.each do |msg|
   %p= msg
-%form{action: "/signup", method: "post"}
-  %div
-    %label{for: "username"} Username:
-    %input{type: "text", name: "username", required: true}
-  %div
-    %label{for: "email"} Email:
-    %input{type: "email", name: "email", required: true}
-  %div
-    %label{for: "employee_id"} Employee id:
-    %input{type: "text", name: "employee_id", required: true}
-  %div
-    %label{for: "password"} Password:
-    %input{type: "password", name: "password", required: true}
-  %div
-    %label{for: "password_confirmation"} Password confirmation:
-    %input{type: "password", name: "password_confirmation", required: true}
+%form(action="/signup" method="post")
+  %fieldset
+    %legend Signup
+    %label(for="username")
+      Username:
+      %input#username(type="text" name="username" required)
+    %label(for="email")
+      Email:
+      %input#email(type="email" name="email" required)
+    %label(for="employee_id")
+      Employee id:
+      %input#employee_id(type="text" name="employee_id" required)
+    %label(for="password")
+      Password:
+      %input#password(type="password" name="password" required)
+    %label(for="password_confirmation")
+      Password confirmation:
+      %input#password_confirmation{
+        type: "password", name: "password_confirmation"
+      }(required)
 
-  %button{type: "submit"} Submit
-%form{action: "/login"}
-  %button{type: "submit"} Login
+  %button(type="submit") Submit
+%form(action="/login")
+  %button(type="submit") Login

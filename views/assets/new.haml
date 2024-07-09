@@ -1,10 +1,14 @@
 %h1 Add new asset
 - @errors&.each do |error|
   %p= error
-%form{action: "/assets", method: "post"}
-  Type:
-  %input{type: "text", name: "type"}
-  Serial number:
-  %input{type: "text", name: "serial_number"}
+%form(action="/assets" method="post" required)
+  %fieldset
+    %legend New Asset
+    %label(for="type")
+      Type:
+      %input#type(type="text" name="type" required)
+    %label(for="serial_number")
+      Serial number:
+      %input#serial_number(type="text" name="serial_number" required)
 
-  %button{type: "submit"} Submit
+  %button(type="submit") Submit
