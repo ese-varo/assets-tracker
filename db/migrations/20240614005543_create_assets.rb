@@ -14,7 +14,7 @@ module Migrations
         updated_at    INTEGER NOT NULL DEFAULT (unixepoch('now', 'localtime'))
       );
       SQL
-      @db.execute query
+      db.execute query
     end
   end
 end

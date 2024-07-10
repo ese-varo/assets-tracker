@@ -42,6 +42,8 @@ module Migrations
 
   # New migration classes inherit from this class
   class Migration
+    attr_reader :db
+
     def initialize(db)
       @db = db
     end
