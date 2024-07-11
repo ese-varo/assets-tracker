@@ -1,20 +1,4 @@
 # frozen_string_literal: true
+require_relative '../lib/database'
 
-require 'sqlite3'
-require 'singleton'
-
-class DatabaseConnection
-  include Singleton
-
-  def initialize
-    Dir.chdir('./')
-    @db = SQLite3::Database.new(ENV['DB_NAME'] || 'db/test.db')
-    @db.results_as_hash = true
-  end
-
-  def connection
-    @db
-  end
-end
-
-DB = DatabaseConnection.instance.connection
+DB = Database::Connection.instance.connection

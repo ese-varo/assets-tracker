@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'model'
 
 class UserValidationError < ValidationError; end
 
 # Handle interaction with database and model functionality
-class User < Base
+class User < Model::Base
   attr_reader :id, :username, :email, :employee_id,
               :password_hash, :created_at, :updated_at
 

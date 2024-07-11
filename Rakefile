@@ -13,8 +13,8 @@ end
 
 def migration_template(name)
   <<~TMP
-    module Migrations
-      class #{migration_class_name(name)} < Migration
+    module Migration
+      class #{migration_class_name(name)} < Base
         def up
         end
 
@@ -39,5 +39,5 @@ end
 
 desc 'Database setup'
 task :db_setup do
-  ruby 'db/setup.rb'
+  ruby 'bin/db_setup.rb'
 end

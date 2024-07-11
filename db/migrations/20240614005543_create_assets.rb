@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Migrations
-  class CreateAssets < Migration
+module Migration
+  class CreateAssets < Base
     def up
       query = <<-SQL
       CREATE TABLE assets (

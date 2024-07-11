@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative 'model'
 
 class AssetValidationError < ValidationError; end
 
 # Handle interaction with database and model functionality
-class Asset < Base
+class Asset < Model::Base
   attr_reader :id, :updated_at, :created_at, :type,
               :serial_number, :user_id, :available
 

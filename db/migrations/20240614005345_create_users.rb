@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Migrations
-  class CreateUsers < Migration
+module Migration
+  class CreateUsers < Base
     def up
       query = <<-SQL
       CREATE TABLE users (

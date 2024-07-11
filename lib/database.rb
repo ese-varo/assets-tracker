@@ -1,13 +1,28 @@
 # frozen_string_literal: true
 
 require 'sqlite3'
-require_relative '../config/environment'
+require 'singleton'
+require_relative '../db/migration'
 
 # This script can be run by executing the db_setup rake task
 # as follows: rake db_setup
-module Migrations
-  # Handles the setup of the database
-  # this is meant to be used in fresh installations.
+# Handles the setup of the database
+# this is meant to be used in fresh installations.
+module Database
+  class Connection
+    include Singleton
+
+    def initialize
+      Dir.chdir('./')
+      @db = SQLite3::Database.new(ENV['DB_NAME'] || 'db/test.db')
+      @db.results_as_hash = true
+    end
+
+    def connection
+      @db
+    end
+  end
+
   class Setup
     def initialize(db)
       @db = db
@@ -16,7 +31,7 @@ module Migrations
     def run_migrations
       @db.transaction
       migrations.each do |migration|
-        clazz = Migrations.const_get(migration.to_s)
+        clazz = Migration.const_get(migration.to_s)
         clazz.new(@db).up
       end
       @db.commit
@@ -29,9 +44,8 @@ module Migrations
 
     def migrations
       migration_files.each { |file| require file }
-      Migrations.constants.select do |c|
-        Migrations.const_get(c).is_a?(Class) &&
-          !%I[Setup Migration].include?(c)
+      Migration.constants.select do |c|
+        Migration.const_get(c).is_a?(Class) && c != :Base
       end
     end
 
@@ -39,23 +53,4 @@ module Migrations
       Dir.glob("#{Dir.pwd}/db/migrations/*.rb")
     end
   end
-
-  # New migration classes inherit from this class
-  class Migration
-    attr_reader :db
-
-    def initialize(db)
-      @db = db
-    end
-
-    def up
-      raise NotImplementedError
-    end
-
-    def down
-      raise NotImplementedError
-    end
-  end
 end
-
-Migrations::Setup.new(DB).run_migrations
