@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   end
 
   get '/login' do
-    redirect '/assets' if authorized?
+    redirect '/assets' if authenticated?
     haml :'users/login'
   end
 
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   end
 
   get '/signup' do
-    redirect back if authorized?
+    redirect back if authenticated?
     haml :'users/signup'
   end
 

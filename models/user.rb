@@ -6,25 +6,29 @@ class UserValidationError < ValidationError; end
 
 # Handle interaction with database and model functionality
 class User < Model::Base
-  attr_reader :id, :username, :email, :employee_id,
+  attr_reader :id, :username, :email, :employee_id, :role,
               :password_hash, :created_at, :updated_at
 
+  ROLE = { employee: 0, manager: 1, admin: 2 }
   USERNAME_FORMAT_REGEX = /^[a-zA-Z]+(?:_[a-zA-Z]+)*$/
   EMAIL_FORMAT_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   EMPLOYEE_ID_FORMAT_REGEX = /^[a-zA-Z0-9]+$/
 
   def initialize(
-    username:, email:, employee_id:, id: nil,
+    username:, email:, employee_id:, role: nil, id: nil,
     password_hash: nil, created_at: nil, updated_at: nil
   )
     @id = id
     @username = username
     @email = email
     self.employee_id = employee_id
+    @role = role
     @password_hash = password_hash
     @created_at = created_at
     @updated_at = updated_at
     @errors = []
+
+    define_role_methods
   end
 
   def employee_id=(value)
@@ -54,6 +58,14 @@ class User < Model::Base
   rescue SQLite3::Exception => e
     @errors << e.message
     raise UserValidationError.new(@errors, save_err)
+  end
+
+  def define_role_methods
+    ROLE.keys.each do |key|
+      User.define_method(:"is_#{key}?") do
+        role == ROLE[key]
+      end
+    end
   end
 
   private

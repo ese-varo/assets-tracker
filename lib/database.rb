@@ -13,7 +13,6 @@ module Database
     include Singleton
 
     def initialize
-      Dir.chdir('./')
       @db = SQLite3::Database.new(ENV['DB_NAME'] || 'db/test.db')
       @db.results_as_hash = true
     end
@@ -50,7 +49,7 @@ module Database
     end
 
     def migration_files
-      Dir.glob("#{Dir.pwd}/db/migrations/*.rb")
+      Dir.glob(File.join(__dir__, '..', 'db/migrations', '*.rb'))
     end
   end
 end

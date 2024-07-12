@@ -55,5 +55,9 @@ class ApplicationController < Sinatra::Base
     def partial(template, locals = {})
       haml(:"partials/#{template}", locals: locals)
     end
+
+    def allowed?(value)
+      value
+    end
   end
 end
