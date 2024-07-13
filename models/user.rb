@@ -8,6 +8,7 @@ class UserValidationError < ValidationError; end
 class User < Model::Base
   attr_reader :id, :username, :email, :employee_id, :role,
               :password_hash, :created_at, :updated_at
+  attr_writer :username, :email, :role
 
   ROLE = { employee: 0, manager: 1, admin: 2 }
   USERNAME_FORMAT_REGEX = /^[a-zA-Z]+(?:_[a-zA-Z]+)*$/
@@ -58,6 +59,29 @@ class User < Model::Base
   rescue SQLite3::Exception => e
     @errors << e.message
     raise UserValidationError.new(@errors, save_err)
+  end
+
+  def update(username:, email:, employee_id:, role:)
+    self.username = username
+    self.email = email
+    self.employee_id = employee_id
+    self.role = role
+    raise UserValidationError.new(@errors, update_err) unless validate
+
+    stmt = DB.prepare <<-SQL
+      UPDATE users
+      SET
+        username = ?,
+        email = ?,
+        employee_id = ?,
+        role = ?,
+        updated_at = (unixepoch('now', 'localtime'))
+      WHERE id = ?
+    SQL
+    stmt.execute username, email, employee_id, role, id
+  rescue SQLite3::Exception => e
+    @errors << e.message
+    raise UserValidationError.new(@errors, update_err)
   end
 
   def define_role_methods
