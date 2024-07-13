@@ -1,0 +1,10 @@
+%p
+  Username: #{user.username}
+  %br/
+  Email: #{user.email}
+  %br/
+  Employee id: #{user.employee_id}
+  %br/
+  Role: #{user.role_as_string}
+  %br/
+  Last time updated: #{Time.at(user.updated_at).strftime('%F')}

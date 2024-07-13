@@ -92,6 +92,10 @@ class User < Model::Base
     end
   end
 
+  def role_as_string
+    ROLE.key(role).capitalize
+  end
+
   private
 
   def validate_username

@@ -1,0 +1,20 @@
+%h1 User List
+%form{action: "/logout", method: "post"}
+  %button{type: "submit"} Logout
+%ul
+  - @users.each do |u|
+    %li
+      != partial('_user', user: u)
+      - if allowed_to? :destroy?, u
+        %form{
+          action: "/users/#{u.id}",
+          method: "post",
+          style: "display: inline;"
+        }
+          %input{type: "hidden", name: "_method", value: "delete"}
+          %button{type: "submit"} Delete
+      %form{
+        action: "/users/#{u.id}/edit",
+        style: "display: inline;"
+      }
+        %button{type: "submit"} Edit
