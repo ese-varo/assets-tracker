@@ -65,9 +65,8 @@ class Asset < Model::Base
         serial_number = ?,
         updated_at = (unixepoch('now', 'localtime'))
       WHERE id = ?
-      AND user_id = ?
     SQL
-    stmt.execute type, serial_number, id, user_id
+    stmt.execute type, serial_number, id
   rescue SQLite3::Exception => e
     @errors << e.message
     raise AssetValidationError.new(@errors, update_err)
@@ -92,13 +91,6 @@ class Asset < Model::Base
       asset = new(**)
       asset.save!
       asset
-    end
-
-    def delete(id, user_id)
-      DB.execute(
-        'DELETE FROM assets WHERE id = ? AND user_id = ?',
-        [id, user_id]
-      )
     end
 
     def respond_to_missing?(name, include_private = false)

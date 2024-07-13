@@ -13,6 +13,10 @@ end
 module Model
   # Handle common functionlaity for models
   class Base
+    def destroy(id)
+      DB.execute("DELETE FROM #{table_name} WHERE id = ?", id)
+    end
+
     private
 
     def save_err
@@ -24,6 +28,10 @@ module Model
     end
 
     class << self
+      def all
+        build_from_hash_collection(DB.execute "SELECT * FROM #{table_name}")
+      end
+
       def method_missing(name, *params, **key_params)
         if /^find_by_(?<prop>.*)/ =~ name
           find_by(prop, *params, **key_params)
