@@ -13,14 +13,12 @@ class ApplicationPolicy
   end
 
   def authorize(action)
-    return if is_authorized?(action)
+    return if allowed_to?(action)
 
     raise UnauthorizedAction, 'Unauthorized action'
   end
 
-  private
-
-  def is_authorized?(action)
+  def allowed_to?(action)
     public_send(action)
   end
 end
