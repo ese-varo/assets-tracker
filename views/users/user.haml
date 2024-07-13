@@ -1,0 +1,5 @@
+%h1 User
+%a{href: "/assets"} Go home
+!= partial('_user', user: @user)
+%form{action: "/users/#{@user.id}/edit"}
+  %button{type: "submit"} Edit

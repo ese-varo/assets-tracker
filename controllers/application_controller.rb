@@ -5,6 +5,7 @@ require 'securerandom'
 require_relative '../config/environment'
 
 class AssetNotFound < Sinatra::NotFound; end
+class UserNotFound < Sinatra::NotFound; end
 
 # Main app controller. All controllers inherit from this one.
 # It adds basic configuration and functionality needed in the controllers
@@ -54,6 +55,10 @@ class ApplicationController < Sinatra::Base
 
     def partial(template, locals = {})
       haml(:"partials/#{template}", locals: locals)
+    end
+
+    def allowed?(value)
+      value
     end
   end
 end

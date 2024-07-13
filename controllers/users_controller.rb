@@ -10,8 +10,39 @@ class UsersController < ApplicationController
     authenticate!
   end
 
+  get '/users' do
+    authorize! to: :index?, on: :User
+    @users = User.all
+    haml :'users/index'
+  end
+
+  get '/users/:id/edit' do
+    @user = User.find_by_id(params[:id])
+    authorize! @user, to: :update?
+    haml :'users/edit'
+  end
+
+  get '/users/:id' do
+    @user = User.find_by_id(params[:id])
+    raise UserNotFound unless @user
+    authorize! to: :show?, on: :User
+    haml :'users/user'
+  end
+
+  put '/users/:id' do
+    data = params_slice_with_sym_keys(:username, :email, :employee_id, :role)
+
+    @user = User.find_by_id(params[:id])
+    authorize! @user, to: :update?
+    @user.update(**data)
+    redirect "/users/#{params['id']}"
+  rescue UserValidationError => e
+    @errors = e.errors
+    haml :'/users/edit'
+  end
+
   get '/login' do
-    redirect '/assets' if authorized?
+    redirect '/assets' if authenticated?
     haml :'users/login'
   end
 
@@ -36,7 +67,7 @@ class UsersController < ApplicationController
   end
 
   get '/signup' do
-    redirect back if authorized?
+    redirect back if authenticated?
     haml :'users/signup'
   end
 

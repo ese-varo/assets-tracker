@@ -1,0 +1,34 @@
+%h1 Edit User
+- @errors&.each do |error|
+  %p= error
+%form(action="/users/#{@user.id}" method="post")
+  %fieldset
+    %legend Edit User
+    %input(type="hidden" name="_method" value="put")
+    %label(for="username")
+      Username:
+      %input#username{
+        type: "text", name: "username", value: @user.username
+      }(required)
+    %label(for="email")
+      Email:
+      %input#email{
+        type: "email", name: "email", value: @user.email
+      }(required)
+    %label(for="employee_id")
+      Employee id:
+      %input#employee_id{
+        type: "text", name: "employee_id", value: @user.employee_id
+      }(required)
+    %label(for="role-select")
+      Role:
+      %select#role-select{
+        name: "role",
+        disabled: false
+      }
+        - User::ROLE.each do |key, val|
+          - next if (key == :admin) && !current_user.is_admin?
+          %option{value: val, selected: @user.role == val}
+            = key.capitalize
+
+  %button(type="submit") Submit

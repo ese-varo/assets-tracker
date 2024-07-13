@@ -8,29 +8,34 @@ class AssetsController < ApplicationController
   end
 
   get '/' do
-    @assets = Asset.find_by_user_id(current_user.id, as_collection: true)
+    authorize! to: :index?, on: :Asset
+    @assets = Asset.all
     haml :'assets/index'
   end
 
   get '/new' do
+    authorize! to: :new?, on: :Asset
     haml :'assets/new'
   end
 
   get '/:id/edit' do
     @asset = Asset.find_by_id(params[:id])
-    raise AssetNotFound unless belongs_to_current_user?(@asset)
+    raise AssetNotFound unless @asset
+    authorize! @asset, to: :update?
 
     haml :'assets/edit'
   end
 
   get '/:id' do
     @asset = Asset.find_by_id(params[:id])
-    raise AssetNotFound unless belongs_to_current_user?(@asset)
+    raise AssetNotFound unless @asset
+    authorize! @asset, to: :show?
 
     haml :'assets/asset'
   end
 
   post '/' do
+    authorize! to: :create?, on: :Asset
     data = params_slice_with_sym_keys(:type, :serial_number)
     data[:user_id] = current_user.id
 
@@ -45,6 +50,7 @@ class AssetsController < ApplicationController
     data = params_slice_with_sym_keys(:type, :serial_number)
 
     @asset = Asset.find_by_id(params[:id])
+    authorize! @asset, to: :update?
     @asset.update(**data)
     redirect "/assets/#{params['id']}"
   rescue AssetValidationError => e
@@ -53,13 +59,9 @@ class AssetsController < ApplicationController
   end
 
   delete '/:id' do
-    Asset.delete(params['id'], current_user.id)
+    @asset = Asset.find_by_id(params[:id])
+    authorize! @asset, to: :destroy?
+    @asset.destroy
     redirect '/assets'
-  end
-
-  helpers do
-    def belongs_to_current_user?(asset)
-      asset&.user_id == current_user.id
-    end
   end
 end
