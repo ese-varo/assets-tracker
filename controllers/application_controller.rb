@@ -25,19 +25,21 @@ class ApplicationController < Sinatra::Base
   end
 
   not_found do
-    "This is nowhere to be found - #{env['sinatra.error'].message}"
-  end
-
-  error Exceptions::AssetNotFound do
-    halt 404, 'NotFound: asset not found'
+    status 404
+    @error_message = env['sinatra.error'].message
+    haml :not_found
   end
 
   error Exceptions::UnauthorizedAction do
-    p env['sinatra.error'].message
+    status 403
+    @error_message = env['sinatra.error'].message
+    haml :unauthorized
   end
 
   error do
-    "Sorry there was an error - #{env['sinatra.error'].message}"
+    status 500
+    @error_message = 'Something went wrong. Our team is working on it.'
+    haml :server_error
   end
 
   helpers do

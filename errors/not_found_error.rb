@@ -3,6 +3,25 @@
 require 'sinatra/base'
 
 module Exceptions
-  class AssetNotFound < Sinatra::NotFound; end
-  class UserNotFound < Sinatra::NotFound; end
+  # Custom exception class to handle not found assets
+  class AssetNotFound < Sinatra::NotFound
+    def initialize
+      super(error_message)
+    end
+
+    def error_message
+      'Asset not found'
+    end
+  end
+
+  # Custom exception class to handle not found users
+  class UserNotFound < Sinatra::NotFound
+    def initialize
+      super(error_message)
+    end
+
+    def error_message
+      'User not found'
+    end
+  end
 end
