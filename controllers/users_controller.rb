@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bcrypt'
-require_relative '../models/user'
 
 # Handles all users and authentication related requests
 class UsersController < ApplicationController

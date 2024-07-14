@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../models/asset'
-
 class AssetsController < ApplicationController
   before do
     authenticate!

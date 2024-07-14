@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# load policies
-Dir[File.join(__dir__, '..', 'policies', '*.rb')].each {|file| require file}
-
 # Module to handle authentication functionality
 module Authentication
   def authenticate!

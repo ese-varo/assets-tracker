@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'application_policy'
-
 class UserPolicy < ApplicationPolicy
   def index?
     user.is_manager? || user.is_admin?
