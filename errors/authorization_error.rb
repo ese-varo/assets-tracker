@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Exceptions
-  # custom unauthorized exception
   class UnauthorizedAction < StandardError
     def initialize(action)
       super(error_message(action))
@@ -10,11 +9,47 @@ module Exceptions
     private
 
     def error_message(action)
-      message = "You are not authorized to #{action}"
-      p "responds to message: #{respond_to?('message')}"
-      p "responds to message=: #{respond_to?('message=')}"
-      p message
-      message
+      "You are not authorized to #{action_to_text(action)}"
+    end
+
+    def action_to_text(_action)
+      raise NotImplementedError
+    end
+  end
+
+  class UnauthorizedUserAction < UnauthorizedAction
+    private
+
+    def action_to_text(action)
+      case action
+      when :show?, :index?
+        'access this page'
+      when :update?
+        'update this user'
+      when :destroy?
+        'delete this user'
+      else
+        'execute this action'
+      end
+    end
+  end
+
+  class UnauthorizedAssetAction < UnauthorizedAction
+    private
+
+    def action_to_text(action)
+      case action
+      when :show?, :index?
+        'access this page'
+      when :update?
+        'update this asset'
+      when :destroy?
+        'delete this asset'
+      when :new?, :create?
+        'create an asset'
+      else
+        'execute this action'
+      end
     end
   end
 end

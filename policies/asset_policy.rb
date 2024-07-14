@@ -2,6 +2,12 @@
 
 # policy to handle authorization on the asset resource
 class AssetPolicy < ApplicationPolicy
+  def authorize(action)
+    return if super(action)
+
+    raise Exceptions::UnauthorizedAssetAction, action
+  end
+
   def index?
     true
   end

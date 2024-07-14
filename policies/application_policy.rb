@@ -10,9 +10,7 @@ class ApplicationPolicy
   end
 
   def authorize(action)
-    return if allowed_to?(action)
-
-    raise Exceptions::UnauthorizedAction, action
+    allowed_to?(action)
   end
 
   def allowed_to?(action)

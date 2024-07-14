@@ -2,6 +2,12 @@
 
 # policy to handle authorization on the user resource
 class UserPolicy < ApplicationPolicy
+  def authorize(action)
+    return if super(action)
+
+    raise Exceptions::UnauthorizedUserAction, action
+  end
+
   def index?
     user.is_manager? || user.is_admin?
   end

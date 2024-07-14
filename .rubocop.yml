@@ -19,6 +19,7 @@ Metrics/MethodLength:
     - 'db/migrations/*'
   Max: 10
   CountAsOne: ['method_call']
+  AllowedMethods: [action_to_text]
 
 Metrics/ClassLength:
   CountAsOne: ['method_call']
@@ -34,7 +35,10 @@ Style/Documentation:
   AllowedConstants: [
     'AssetValidationError',
     'AssetsController',
-    'DatabaseConnection'
+    'DatabaseConnection',
+    'UnauthorizedAction',
+    'UnauthorizedUserAction',
+    'UnauthorizedAssetAction'
   ]
 
 Style/HashSyntax:
