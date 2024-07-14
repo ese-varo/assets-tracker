@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# policy to handle authorization on the asset resource
 class AssetPolicy < ApplicationPolicy
   def index?
     true
@@ -25,4 +26,3 @@ class AssetPolicy < ApplicationPolicy
     user.is_manager? || user.is_admin?
   end
 end
-

@@ -2,11 +2,10 @@
 
 # Handle interaction with database and model functionality
 class User < Model::Base
-  attr_reader :id, :username, :email, :employee_id, :role,
-              :password_hash, :created_at, :updated_at
-  attr_writer :username, :email, :role
+  attr_accessor :username, :email, :role
+  attr_reader :id, :employee_id, :password_hash, :created_at, :updated_at
 
-  ROLE = { employee: 0, manager: 1, admin: 2 }
+  ROLE = { employee: 0, manager: 1, admin: 2 }.freeze
   USERNAME_FORMAT_REGEX = /^[a-zA-Z]+(?:_[a-zA-Z]+)*$/
   EMAIL_FORMAT_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   EMPLOYEE_ID_FORMAT_REGEX = /^[a-zA-Z0-9]+$/
@@ -81,7 +80,7 @@ class User < Model::Base
   end
 
   def define_role_methods
-    ROLE.keys.each do |key|
+    ROLE.each_key do |key|
       User.define_method(:"is_#{key}?") do
         role == ROLE[key]
       end

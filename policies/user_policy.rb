@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# policy to handle authorization on the user resource
 class UserPolicy < ApplicationPolicy
   def index?
     user.is_manager? || user.is_admin?

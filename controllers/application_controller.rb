@@ -33,7 +33,7 @@ class ApplicationController < Sinatra::Base
   end
 
   error Exceptions::UnauthorizedAction do
-    p "#{env['sinatra.error'].message}"
+    p env['sinatra.error'].message
   end
 
   error do

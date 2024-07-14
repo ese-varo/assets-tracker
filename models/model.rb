@@ -19,7 +19,7 @@ module Model
 
     class << self
       def all
-        build_from_hash_collection(DB.execute "SELECT * FROM #{table_name}")
+        build_from_hash_collection(DB.execute("SELECT * FROM #{table_name}"))
       end
 
       def method_missing(name, *params, **key_params)

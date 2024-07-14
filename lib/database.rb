@@ -4,11 +4,8 @@ require 'sqlite3'
 require 'singleton'
 require_relative '../db/migration'
 
-# This script can be run by executing the db_setup rake task
-# as follows: rake db_setup
-# Handles the setup of the database
-# this is meant to be used in fresh installations.
 module Database
+  # singleton class to handle the db connection in the entire app
   class Connection
     include Singleton
 
@@ -22,6 +19,8 @@ module Database
     end
   end
 
+  # Handles the setup of the database
+  # this is meant to be used in fresh installations.
   class Setup
     def initialize(db)
       @db = db

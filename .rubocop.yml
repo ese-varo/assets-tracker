@@ -9,7 +9,10 @@
 #
 # See https://docs.rubocop.org/rubocop/configuration
 Lint/MissingSuper:
-  AllowedParentClasses: [Base]
+  AllowedParentClasses: [Model::Base]
+
+Metrics/AbcSize:
+  AllowedMethods: [update]
 
 Metrics/MethodLength:
   Exclude:

@@ -11,6 +11,11 @@ class AssetsController < ApplicationController
     haml :'assets/index'
   end
 
+  get '/assigned' do
+    @assets = Asset.find_by_user_id(current_user.id, as_collection: true)
+    haml :'assets/index'
+  end
+
   get '/new' do
     authorize! to: :new?, on: :Asset
     haml :'assets/new'
@@ -19,16 +24,16 @@ class AssetsController < ApplicationController
   get '/:id/edit' do
     @asset = Asset.find_by_id(params[:id])
     raise Exceptions::AssetNotFound unless @asset
-    authorize! @asset, to: :update?
 
+    authorize! @asset, to: :update?
     haml :'assets/edit'
   end
 
   get '/:id' do
     @asset = Asset.find_by_id(params[:id])
     raise Exceptions::AssetNotFound unless @asset
-    authorize! @asset, to: :show?
 
+    authorize! @asset, to: :show?
     haml :'assets/asset'
   end
 
@@ -36,7 +41,6 @@ class AssetsController < ApplicationController
     authorize! to: :create?, on: :Asset
     data = params_slice_with_sym_keys(:type, :serial_number)
     data[:user_id] = current_user.id
-
     @asset = Asset.create(**data)
     redirect '/assets'
   rescue Exceptions::AssetValidationError => e
@@ -46,7 +50,6 @@ class AssetsController < ApplicationController
 
   put '/:id' do
     data = params_slice_with_sym_keys(:type, :serial_number)
-
     @asset = Asset.find_by_id(params[:id])
     authorize! @asset, to: :update?
     @asset.update(**data)

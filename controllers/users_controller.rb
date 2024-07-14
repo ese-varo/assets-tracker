@@ -24,13 +24,13 @@ class UsersController < ApplicationController
   get '/users/:id' do
     @user = User.find_by_id(params[:id])
     raise Exceptions::UserNotFound unless @user
+
     authorize! to: :show?, on: :User
     haml :'users/user'
   end
 
   put '/users/:id' do
     data = params_slice_with_sym_keys(:username, :email, :employee_id, :role)
-
     @user = User.find_by_id(params[:id])
     authorize! @user, to: :update?
     @user.update(**data)
