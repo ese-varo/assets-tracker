@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'model'
-
-class UserValidationError < ValidationError; end
-
 # Handle interaction with database and model functionality
 class User < Model::Base
   attr_reader :id, :username, :email, :employee_id, :role,
@@ -44,7 +40,7 @@ class User < Model::Base
   end
 
   def save!
-    raise UserValidationError.new(@errors, save_err) unless validate
+    raise Exceptions::UserValidationError.new(@errors, save_err) unless validate
 
     query = <<-SQL
       INSERT INTO users (username, email, employee_id, password_hash)
@@ -58,7 +54,7 @@ class User < Model::Base
     ]
   rescue SQLite3::Exception => e
     @errors << e.message
-    raise UserValidationError.new(@errors, save_err)
+    raise Exceptions::UserValidationError.new(@errors, save_err)
   end
 
   def update(username:, email:, employee_id:, role:)
@@ -66,7 +62,7 @@ class User < Model::Base
     self.email = email
     self.employee_id = employee_id
     self.role = role
-    raise UserValidationError.new(@errors, update_err) unless validate
+    raise Exceptions::UserValidationError.new(@errors, update_err) unless validate
 
     stmt = DB.prepare <<-SQL
       UPDATE users
@@ -81,7 +77,7 @@ class User < Model::Base
     stmt.execute username, email, employee_id, role, id
   rescue SQLite3::Exception => e
     @errors << e.message
-    raise UserValidationError.new(@errors, update_err)
+    raise Exceptions::UserValidationError.new(@errors, update_err)
   end
 
   def define_role_methods

@@ -2,24 +2,19 @@
 
 require 'sinatra/base'
 require 'securerandom'
-require_relative '../config/environment'
-
-class AssetNotFound < Sinatra::NotFound; end
-class UserNotFound < Sinatra::NotFound; end
 
 # Main app controller. All controllers inherit from this one.
 # It adds basic configuration and functionality needed in the controllers
 class ApplicationController < Sinatra::Base
   include Authentication
 
+  ONE_DAY_IN_SECONDS = 86_400
   configure do
     set :views, File.expand_path('../views', __dir__)
     set :haml, format: :html5
 
-    enable :admin_access
-
     enable :sessions
-    set :sessions, expire_after: 86_400 # in seconds 1 day
+    set :sessions, expire_after: ONE_DAY_IN_SECONDS
     set :session_store, Rack::Session::Pool
     set :session_secret, ENV['SESSION_SECRET'] { SecureRandom.hex(64) }
   end
@@ -33,8 +28,12 @@ class ApplicationController < Sinatra::Base
     "This is nowhere to be found - #{env['sinatra.error'].message}"
   end
 
-  error AssetNotFound do
+  error Exceptions::AssetNotFound do
     halt 404, 'NotFound: asset not found'
+  end
+
+  error Exceptions::UnauthorizedAction do
+    p "#{env['sinatra.error'].message}"
   end
 
   error do
@@ -55,10 +54,6 @@ class ApplicationController < Sinatra::Base
 
     def partial(template, locals = {})
       haml(:"partials/#{template}", locals: locals)
-    end
-
-    def allowed?(value)
-      value
     end
   end
 end

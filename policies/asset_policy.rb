@@ -14,7 +14,7 @@ class AssetPolicy < ApplicationPolicy
   end
 
   def create?
-    user.is_manager? || user.i_admin?
+    user.is_manager? || user.is_admin?
   end
 
   def update?

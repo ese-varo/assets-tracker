@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-class UnauthorizedAction < StandardError
-  # TODO handle 401 renponse code
-end
-
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -15,7 +11,7 @@ class ApplicationPolicy
   def authorize(action)
     return if allowed_to?(action)
 
-    raise UnauthorizedAction, 'Unauthorized action'
+    raise Exceptions::UnauthorizedAction, action
   end
 
   def allowed_to?(action)

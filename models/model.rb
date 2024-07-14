@@ -1,15 +1,5 @@
 # frozen_string_literal: true
 
-# class to handle model validation errors
-class ValidationError < StandardError
-  attr_reader :errors
-
-  def initialize(errors, generic_message)
-    super(generic_message)
-    @errors = errors
-  end
-end
-
 module Model
   # Handle common functionlaity for models
   class Base

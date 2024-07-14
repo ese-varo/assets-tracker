@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'model'
-
-class AssetValidationError < ValidationError; end
-
 # Handle interaction with database and model functionality
 class Asset < Model::Base
   attr_reader :id, :updated_at, :created_at, :type,
@@ -41,7 +37,7 @@ class Asset < Model::Base
   end
 
   def save!
-    raise AssetValidationError.new(@errors, save_err) unless validate
+    raise Exceptions::AssetValidationError.new(@errors, save_err) unless validate
 
     query = <<-SQL
       INSERT INTO assets (type, serial_number, user_id)
@@ -50,13 +46,13 @@ class Asset < Model::Base
     DB.execute query, [type, serial_number, user_id]
   rescue SQLite3::Exception => e
     @errors << e.message
-    raise AssetValidationError.new(@errors, save_err)
+    raise Exceptions::AssetValidationError.new(@errors, save_err)
   end
 
   def update(type:, serial_number:)
     self.type = type
     self.serial_number = serial_number
-    raise AssetValidationError.new(@errors, update_err) unless validate
+    raise Exceptions::AssetValidationError.new(@errors, update_err) unless validate
 
     stmt = DB.prepare <<-SQL
       UPDATE assets
@@ -69,7 +65,7 @@ class Asset < Model::Base
     stmt.execute type, serial_number, id
   rescue SQLite3::Exception => e
     @errors << e.message
-    raise AssetValidationError.new(@errors, update_err)
+    raise Exceptions::AssetValidationError.new(@errors, update_err)
   end
 
   private

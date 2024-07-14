@@ -18,7 +18,7 @@ class AssetsController < ApplicationController
 
   get '/:id/edit' do
     @asset = Asset.find_by_id(params[:id])
-    raise AssetNotFound unless @asset
+    raise Exceptions::AssetNotFound unless @asset
     authorize! @asset, to: :update?
 
     haml :'assets/edit'
@@ -26,7 +26,7 @@ class AssetsController < ApplicationController
 
   get '/:id' do
     @asset = Asset.find_by_id(params[:id])
-    raise AssetNotFound unless @asset
+    raise Exceptions::AssetNotFound unless @asset
     authorize! @asset, to: :show?
 
     haml :'assets/asset'
@@ -39,9 +39,9 @@ class AssetsController < ApplicationController
 
     @asset = Asset.create(**data)
     redirect '/assets'
-  rescue AssetValidationError => e
+  rescue Exceptions::AssetValidationError => e
     @errors = e.errors
-    haml :'/assets/new'
+    haml :'assets/new'
   end
 
   put '/:id' do
@@ -51,9 +51,9 @@ class AssetsController < ApplicationController
     authorize! @asset, to: :update?
     @asset.update(**data)
     redirect "/assets/#{params['id']}"
-  rescue AssetValidationError => e
+  rescue Exceptions::AssetValidationError => e
     @errors = e.errors
-    haml :'/assets/edit'
+    haml :'assets/edit'
   end
 
   delete '/:id' do

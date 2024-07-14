@@ -23,7 +23,7 @@ class UsersController < ApplicationController
 
   get '/users/:id' do
     @user = User.find_by_id(params[:id])
-    raise UserNotFound unless @user
+    raise Exceptions::UserNotFound unless @user
     authorize! to: :show?, on: :User
     haml :'users/user'
   end
@@ -35,9 +35,9 @@ class UsersController < ApplicationController
     authorize! @user, to: :update?
     @user.update(**data)
     redirect "/users/#{params['id']}"
-  rescue UserValidationError => e
+  rescue Exceptions::UserValidationError => e
     @errors = e.errors
-    haml :'/users/edit'
+    haml :'users/edit'
   end
 
   get '/login' do
@@ -56,7 +56,7 @@ class UsersController < ApplicationController
       redirect '/assets'
     else
       @error = 'Incorrect authentication credentials'
-      haml :'/users/login'
+      haml :'users/login'
     end
   end
 
@@ -80,7 +80,7 @@ class UsersController < ApplicationController
       :username, :email, :employee_id, :password
     ))
     redirect '/login'
-  rescue UserValidationError => e
+  rescue Exceptions::UserValidationError => e
     @errors = e.errors
     haml :'users/signup'
   end
