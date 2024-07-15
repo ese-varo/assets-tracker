@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
+require 'bundler'
+require 'dotenv/load'
+Bundler.require(:default, ENV['APP_ENV'])
 require_relative '../lib/utils'
-require_all_from_dir('lib')
-require_all_from_dir('errors')
-require_all_from_dir('policies', sort_by_pattern: /application/)
-require_all_from_dir('models', sort_by_pattern: /model/)
-require_all_from_dir('controllers', sort_by_pattern: /application/)
+
+require_all 'lib'
+require_all 'errors'
+require_all 'policies', sort_by_pattern: /application/
+require_all 'models', sort_by_pattern: /model/
+require_all 'controllers', sort_by_pattern: /application/
 
 DB = Database::Connection.instance.connection
