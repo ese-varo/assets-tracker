@@ -57,5 +57,13 @@ class ApplicationController < Sinatra::Base
     def partial(template, locals = {})
       haml(:"partials/#{template}", locals: locals)
     end
+
+    def request_path_is_public?
+      public_paths.include? request.path_info
+    end
+
+    def public_paths
+      raise NotImplementedError
+    end
   end
 end

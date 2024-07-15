@@ -5,8 +5,7 @@ require 'bcrypt'
 # Handles all users and authentication related requests
 class UsersController < ApplicationController
   before do
-    pass if %w[login signup logout].include? request.path_info.split('/')[1]
-    authenticate!
+    authenticate! unless request_path_is_public?
   end
 
   get '/users' do
@@ -88,6 +87,10 @@ class UsersController < ApplicationController
   helpers do
     def valid_password?(password_hash, password)
       BCrypt::Password.new(password_hash) == password
+    end
+
+    def public_paths
+      %w[/login /signup /logout]
     end
   end
 end
