@@ -84,6 +84,13 @@ class UsersController < ApplicationController
     haml :'users/signup'
   end
 
+  delete '/users/:id' do
+    @user = User.find_by_id(params[:id])
+    authorize! @user, to: :destroy?
+    @user.destroy
+    redirect '/users'
+  end
+
   helpers do
     def valid_password?(password_hash, password)
       BCrypt::Password.new(password_hash) == password

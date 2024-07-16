@@ -129,14 +129,14 @@ class User < Model::Base
       find_by_methods.include?(prop) || super
     end
 
+    def table_name
+      'users'
+    end
+
     private
 
     def find_by_methods
       %w[username email employee_id]
-    end
-
-    def table_name
-      'users'
     end
   end
 end

@@ -3,8 +3,8 @@
 module Model
   # Handle common functionlaity for models
   class Base
-    def destroy(id)
-      DB.execute("DELETE FROM #{table_name} WHERE id = ?", id)
+    def destroy
+      DB.execute("DELETE FROM #{self.class.table_name} WHERE id = ?", self.id)
     end
 
     private
@@ -32,6 +32,10 @@ module Model
 
       def respond_to_missing?(name, include_private = false)
         name.to_s == 'find_by_id' || super
+      end
+
+      def table_name
+        raise NotImplementedError
       end
 
       private
@@ -66,10 +70,6 @@ module Model
       end
 
       def find_by_methods
-        raise NotImplementedError
-      end
-
-      def table_name
         raise NotImplementedError
       end
 
