@@ -4,6 +4,7 @@
 %form(action="/assets" method="post" required)
   %fieldset
     %legend New Asset
+    != csrf_tag
     %label(for="type")
       Type:
       %input#type(type="text" name="type" required)

@@ -4,6 +4,7 @@
 %form(action="/users/#{@user.id}" method="post")
   %fieldset
     %legend Edit User
+    != csrf_tag
     %input(type="hidden" name="_method" value="put")
     %label(for="username")
       Username:

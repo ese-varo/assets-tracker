@@ -1,5 +1,6 @@
 %h1 User List
 %form{action: "/logout", method: "post"}
+  != csrf_tag
   %button{type: "submit"} Logout
 %ul
   - @users.each do |u|
@@ -11,10 +12,12 @@
           method: "post",
           style: "display: inline;"
         }
+          != csrf_tag
           %input{type: "hidden", name: "_method", value: "delete"}
           %button{type: "submit"} Delete
       %form{
         action: "/users/#{u.id}/edit",
         style: "display: inline;"
       }
+        != csrf_tag
         %button{type: "submit"} Edit

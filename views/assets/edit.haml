@@ -4,6 +4,7 @@
 %form(action="/assets/#{@asset.id}" method="post")
   %fieldset
     %legend Edit Asset
+    != csrf_tag
     %input(type="hidden" name="_method" value="put")
     %label(for="type")
       Type:

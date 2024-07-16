@@ -14,9 +14,12 @@ class ApplicationController < Sinatra::Base
     set :haml, format: :html5
 
     enable :sessions
+    enable :protection
+
     set :sessions, expire_after: ONE_DAY_IN_SECONDS
-    set :session_store, Rack::Session::Pool
-    set :session_secret, ENV['SESSION_SECRET'] { SecureRandom.hex(64) }
+    set :session_store, Rack::Session::Cookie
+    set :session_secret, ENV['SESSION_SECRET'] || SecureRandom.hex(64)
+    use Rack::Protection::AuthenticityToken
   end
 
   configure :development do
@@ -64,6 +67,10 @@ class ApplicationController < Sinatra::Base
 
     def public_paths
       raise NotImplementedError
+    end
+
+    def csrf_tag
+      haml "%input(type='hidden' name='authenticity_token' value='#{session[:csrf]}')"
     end
   end
 end
