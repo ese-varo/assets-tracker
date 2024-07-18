@@ -2,29 +2,76 @@
 
 require 'sinatra/base'
 require 'securerandom'
+require 'logger'
 
 # Main app controller. All controllers inherit from this one.
 # It adds basic configuration and functionality needed in the controllers
 class ApplicationController < Sinatra::Base
   include Authentication
+  helpers ApplicationHelpers
 
   ONE_DAY_IN_SECONDS = 86_400
+  LOG_DIR = File.expand_path('../logs', __dir__)
+  VIEWS_DIR = File.expand_path('../views', __dir__)
+  SESSION_SECRET = ENV['SESSION_SECRET'] || SecureRandom.hex(64)
+
+  def self.logging_configure
+    FileUtils.mkdir_p(LOG_DIR)
+
+    req_logger = build_logger('requests', 'weekly')
+    use CorrelatedCommonLogger, req_logger
+
+    app_logger = build_logger('application', 'weekly')
+    app_logger.info '====== Booting up ======'
+    set :logger, app_logger
+
+    error_logger = build_logger('errors', 'monthly')
+    set :error_logger, error_logger
+  end
+
+  def self.build_logger(name, rotation_frequency)
+    log_file_path = File.join(LOG_DIR, "#{name}.log")
+    begin
+      log_file = File.new(log_file_path, 'a+')
+      log_file.sync = true
+      Logger.new(log_file, rotation_frequency)
+    rescue StandarError => e
+      puts "Error creating #{name} logger: #{e.message}"
+    end
+  end
+
   configure do
-    set :views, File.expand_path('../views', __dir__)
+    set :views, VIEWS_DIR
     set :haml, format: :html5
 
     enable :sessions
-    enable :protection
-
     set :sessions, expire_after: ONE_DAY_IN_SECONDS
     set :session_store, Rack::Session::Cookie
-    set :session_secret, ENV['SESSION_SECRET'] || SecureRandom.hex(64)
+    set :session_secret, SESSION_SECRET
+
+    enable :protection
     use Rack::Protection::AuthenticityToken
+
+    enable :logging
+    ApplicationController.logging_configure
   end
 
   configure :development do
+    set :logging, Logger::DEBUG
     set :show_exceptions, :after_handler
     # set :show_exceptions, false
+  end
+
+  configure :production do
+    set :logging, Logger::INFO
+  end
+
+  at_exit do
+    logger.info '====== Shutting down ======'
+  end
+
+  before do
+    env['correlation_id'] = SecureRandom.uuid
   end
 
   not_found do
@@ -43,34 +90,5 @@ class ApplicationController < Sinatra::Base
     status 500
     @error_message = 'Something went wrong. Our team is working on it.'
     haml :server_error
-  end
-
-  helpers do
-    def current_user
-      return unless session[:user_id]
-
-      @current_user ||= User.find_by_id(session[:user_id])
-    end
-
-    # return specified params with keys as symbols
-    def params_slice_with_sym_keys(*keys)
-      params.slice(*keys).to_h.transform_keys(&:to_sym)
-    end
-
-    def partial(template, locals = {})
-      haml(:"partials/#{template}", locals: locals)
-    end
-
-    def request_path_is_public?
-      public_paths.include? request.path_info
-    end
-
-    def public_paths
-      raise NotImplementedError
-    end
-
-    def csrf_tag
-      haml "%input(type='hidden' name='authenticity_token' value='#{session[:csrf]}')"
-    end
   end
 end

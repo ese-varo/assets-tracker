@@ -4,6 +4,8 @@ require 'bcrypt'
 
 # Handles all users and authentication related requests
 class UsersController < ApplicationController
+  helpers UsersHelpers
+
   before do
     authenticate! unless request_path_is_public?
   end
@@ -89,15 +91,5 @@ class UsersController < ApplicationController
     authorize! @user, to: :destroy?
     @user.destroy
     redirect '/users'
-  end
-
-  helpers do
-    def valid_password?(password_hash, password)
-      BCrypt::Password.new(password_hash) == password
-    end
-
-    def public_paths
-      %w[/login /signup /logout]
-    end
   end
 end

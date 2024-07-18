@@ -6,6 +6,7 @@ Bundler.require(:default, ENV['APP_ENV'])
 require_relative '../lib/utils'
 
 require_all 'lib'
+require_all 'helpers'
 require_all 'errors'
 require_all 'policies', sort_by_pattern: /application/
 require_all 'models', sort_by_pattern: /model/

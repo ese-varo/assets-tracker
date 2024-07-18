@@ -4,7 +4,7 @@ module Model
   # Handle common functionlaity for models
   class Base
     def destroy
-      DB.execute("DELETE FROM #{self.class.table_name} WHERE id = ?", self.id)
+      DB.execute("DELETE FROM #{self.class.table_name} WHERE id = ?", id)
     end
 
     private
