@@ -37,6 +37,7 @@ class ApplicationController < Sinatra::Base
       Logger.new(log_file, rotation_frequency)
     rescue StandarError => e
       puts "Error creating #{name} logger: #{e.message}"
+      nil
     end
   end
 
@@ -75,18 +76,22 @@ class ApplicationController < Sinatra::Base
   end
 
   not_found do
-    status 404
     @error_message = env['sinatra.error'].message
+    log_not_found
+    status 404
     haml :not_found
   end
 
   error Exceptions::UnauthorizedAction do
+    error = env['sinatra.error']
+    @error_message = error.message
+    logger.warn(with_cid(error.log_message))
     status 403
-    @error_message = env['sinatra.error'].message
     haml :unauthorized
   end
 
   error do
+    log_generic_error
     status 500
     @error_message = 'Something went wrong. Our team is working on it.'
     haml :server_error

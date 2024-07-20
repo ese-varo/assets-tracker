@@ -5,7 +5,7 @@ module Exceptions
   class ValidationError < StandardError
     attr_reader :errors
 
-    def initialize(errors, generic_message)
+    def initialize(errors, generic_message = '')
       super(generic_message)
       @errors = errors
     end

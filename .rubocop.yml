@@ -12,7 +12,10 @@ Lint/MissingSuper:
   AllowedParentClasses: [Model::Base]
 
 Metrics/AbcSize:
-  AllowedMethods: [update]
+  AllowedMethods: [update, log]
+
+Metrics/CyclomaticComplexity:
+  AllowedMethods: [log]
 
 Metrics/MethodLength:
   Exclude:
@@ -43,3 +46,9 @@ Style/Documentation:
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: either_consistent
+
+Style/RaiseArgs:
+  AllowedCompactTypes: [
+    Exceptions::UserNotFound,
+    Exceptions::AssetNotFound
+  ]

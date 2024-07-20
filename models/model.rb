@@ -7,14 +7,16 @@ module Model
       DB.execute("DELETE FROM #{self.class.table_name} WHERE id = ?", id)
     end
 
-    private
-
     def save_err
       "Error while saving #{self.class}"
     end
 
     def update_err
       "Error while updating #{self.class}"
+    end
+
+    def create_err
+      "Error while creating #{self.class}"
     end
 
     class << self

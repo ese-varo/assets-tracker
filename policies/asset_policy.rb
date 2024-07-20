@@ -5,7 +5,7 @@ class AssetPolicy < ApplicationPolicy
   def authorize(action)
     return if super(action)
 
-    raise Exceptions::UnauthorizedAssetAction, action
+    raise Exceptions::UnauthorizedAssetAction.new(action, record, user)
   end
 
   def index?

@@ -20,6 +20,21 @@ module ApplicationHelpers
     settings.error_logger
   end
 
+  def log_generic_error(custom_msg = '')
+    error = env['sinatra.error']
+    error_msg = "Server: ERROR | #{error.class}: #{custom_msg || '--'} | " \
+                "(500 Internal Server Error)\n" \
+                "#{error.message}\n" \
+                "#{error.backtrace.join('\n')}"
+    error_logger.error(with_cid(error_msg))
+  end
+
+  def log_not_found
+    msg = "Resource: NOT_FOUND | #{env['sinatra.error'].message} " \
+          '(404 Not Found)'
+    logger.info(with_cid(msg))
+  end
+
   # return specified params with keys as symbols
   def params_slice_with_sym_keys(*keys)
     params.slice(*keys).to_h.transform_keys(&:to_sym)
@@ -34,6 +49,23 @@ module ApplicationHelpers
   end
 
   def public_paths
+    raise NotImplementedError
+  end
+
+  def masked(val)
+    '*' * val.length
+  end
+
+  def masked_params
+    data = []
+    params.each do |key, val|
+      masked_value = sensitive_params.include?(key) ? masked(val) : val
+      data << "#{key}: #{masked_value}"
+    end
+    "Data: #{data.join(', ')}"
+  end
+
+  def sensitive_params
     raise NotImplementedError
   end
 

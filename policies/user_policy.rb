@@ -5,7 +5,7 @@ class UserPolicy < ApplicationPolicy
   def authorize(action)
     return if super(action)
 
-    raise Exceptions::UnauthorizedUserAction, action
+    raise Exceptions::UnauthorizedUserAction.new(action, record, user)
   end
 
   def index?
