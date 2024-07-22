@@ -19,36 +19,32 @@ module Database
     end
   end
 
-  # Handles the setup of the database
-  # this is meant to be used in fresh installations.
-  class Setup
-    def initialize(db)
-      @db = db
-    end
-
-    def run_migrations
-      @db.transaction
-      migrations.each do |migration|
-        clazz = Migration.const_get(migration.to_s)
-        clazz.new(@db).up
+  # Handles running the existing migrations
+  class Migrator
+    class << self
+      def migrate(db)
+        db.transaction
+        migrations.each do |migration|
+          clazz = Migration.const_get(migration.to_s)
+          clazz.new(db).up
+        end
+        db.commit
+      rescue StandardError => e
+        db.rollback
+        puts "Error running migrations: #{e.message}"
       end
-      @db.commit
-    rescue StandardError => e
-      @db.rollback
-      puts "Error running migrations: #{e.message}"
-    end
+      private
 
-    private
-
-    def migrations
-      migration_files.each { |file| require file }
-      Migration.constants.select do |c|
-        Migration.const_get(c).is_a?(Class) && c != :Base
+      def migrations
+        migration_files.each { |file| require file }
+        Migration.constants.select do |c|
+          Migration.const_get(c).is_a?(Class) && c != :Base
+        end
       end
-    end
 
-    def migration_files
-      Dir.glob(File.join(__dir__, '..', 'db/migrations', '*.rb'))
+      def migration_files
+        Dir.glob(File.join(__dir__, '..', 'db/migrations', '*.rb'))
+      end
     end
   end
 end

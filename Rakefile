@@ -28,15 +28,18 @@ end
 # Usage
 # cli example command: rake task_name[migration_class_name]
 # e.g. rake generate_migration[create_users]
-desc 'Generate migration'
-task :generate_migration, [:name] do |_t, args|
-  file_name = migration_file_name(args[:name])
-  file = File.new(File.join(__dir__, '/db/migrations/', file_name), 'w')
-  file.write migration_template(args[:name])
-  file.close
+namespace :db do
+  desc 'Generate migration'
+  task :generate_migration, [:name] do |_t, args|
+    file_name = migration_file_name(args[:name])
+    file = File.new(File.join(__dir__, '/db/migrations/', file_name), 'w')
+    file.write migration_template(args[:name])
+    file.close
+  end
+
+  desc 'Migrate database'
+  task :migrate do
+    ruby 'bin/db_migrate.rb'
+  end
 end
 
-desc 'Database setup'
-task :db_setup do
-  ruby 'bin/db_setup.rb'
-end
