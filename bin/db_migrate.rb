@@ -4,4 +4,5 @@
 require_relative '../config/environment'
 
 # This script can be run by executing the db:migrate rake task
-Database::Migrator.migrate(DB)
+db_connection = Database::Connection.instance.connection
+Database::Migrator.new(db_connection).migrate

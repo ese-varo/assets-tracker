@@ -2,7 +2,7 @@
 
 require 'bundler'
 require 'dotenv/load'
-Bundler.require(:default, ENV['APP_ENV'])
+Bundler.require(:default, ENV.fetch('APP_ENV'))
 require_relative '../lib/utils'
 
 require_all 'lib'

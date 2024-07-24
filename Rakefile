@@ -8,7 +8,7 @@ def migration_file_name(name)
 end
 
 def migration_class_name(name)
-  name.split('_').map(&:capitalize).join('')
+  name.split('_').map(&:capitalize).join
 end
 
 def migration_template(name)
@@ -29,6 +29,11 @@ end
 # cli example command: rake task_name[migration_class_name]
 # e.g. rake generate_migration[create_users]
 namespace :db do
+  desc 'App environment'
+  task :environment do
+    require_relative 'config/environment'
+  end
+
   desc 'Generate migration'
   task :generate_migration, [:name] do |_t, args|
     file_name = migration_file_name(args[:name])
@@ -41,5 +46,16 @@ namespace :db do
   task :migrate do
     ruby 'bin/db_migrate.rb'
   end
-end
 
+  desc 'Setup database'
+  task setup: :environment do
+    db_connection = Database::Connection.instance.connection
+    Database::Setup.new(db_connection).execute
+  end
+
+  desc 'Pending migrations'
+  task pending_migrations: :environment do
+    db_connection = Database::Connection.instance.connection
+    Database::Migrator.new(db_connection).pending_migrations
+  end
+end
