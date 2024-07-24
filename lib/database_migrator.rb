@@ -26,6 +26,17 @@ module Database
       logger.error(msg)
     end
 
+    def pending_migrations
+      pending_migrations = find_pending_migrations
+      log_pending_migrations(pending_migrations)
+    rescue SQLite3::Exception => e
+      msg = 'Something went wrong while verifying pending migrations: ' \
+        "#{e.message}"
+      logger.error(msg)
+    end
+
+    private
+
     def process_migrations(migrations)
       migrations.each do |file|
         execute_migration(file)
@@ -43,15 +54,6 @@ module Database
 
     def snake_case_to_camel_case(text)
       text.split('_').each(&:capitalize!).join
-    end
-
-    def pending_migrations
-      pending_migrations = find_pending_migrations
-      log_pending_migrations(pending_migrations)
-    rescue SQLite3::Exception => e
-      msg = 'Something went wrong while verifying pending migrations: ' \
-            "#{e.message}"
-      logger.error(msg)
     end
 
     def log_pending_migrations(pending_migrations)
@@ -77,8 +79,6 @@ module Database
       data = db.execute('SELECT version FROM schema_migrations')
       data.map { |row| row['version'] }
     end
-
-    private
 
     def migration_version_from_file(file_path)
       File.basename(file_path).split('_')[0]
