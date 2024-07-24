@@ -15,10 +15,10 @@ module Authentication
   # 1. Actions where the resource already exist and can be
   #    instanciated prior authorization, e.g. to update an asset
   #    the method call would be: authorize! @asset, to: update?
-  # 2. Actions where there like index? or new? where the porpouse
-  #    is to verify the authorization to show that view
-  #    e.g. assets show index view: authorize! to: index?, Asset
-  #    e.g. assets show edit view:  authorize! to: update?, Asset
+  # 2. Actions like index? for lists or new? to create a resource,
+  #    where the porpouse only is to verify the authorization to show that view
+  #    e.g. show assets index view: authorize! to: index?, Asset
+  #    e.g. show assets edit view:  authorize! to: update?, Asset
   def authorize!(record = nil, to:, on: nil)
     policy(record, on: on).authorize(to)
   end
