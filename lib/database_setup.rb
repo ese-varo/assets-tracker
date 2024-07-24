@@ -21,6 +21,8 @@ module Database
       run_migrations
     end
 
+    private
+
     def create_db
       logger.info('Creating database')
       SQLite3::Database.new(ENV['DB_NAME'] || 'db/test.db')
@@ -43,8 +45,6 @@ module Database
     def run_migrations
       Migrator.new(db).migrate
     end
-
-    private
 
     def db_name
       filename = ENV['DB_NAME'] || 'db/test.db'
