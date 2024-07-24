@@ -8,7 +8,7 @@ module Database
     attr_reader :logger
 
     def initialize
-      @logger = Logger.new(STDOUT)
+      @logger = Logger.new($stdout)
       default_format_setup
     end
 

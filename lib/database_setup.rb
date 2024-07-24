@@ -36,7 +36,7 @@ module Database
       logger.info("Table schema_migrations successfully created\n")
     rescue SQLite3::Exception => e
       msg = 'Something went wrong while creating schema_migrations table: ' \
-        "#{e.message}"
+            "#{e.message}"
       logger.error(msg)
     end
 

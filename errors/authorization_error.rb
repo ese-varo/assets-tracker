@@ -24,17 +24,17 @@ module Exceptions
     end
 
     def set_log_message
-      @log_message = action != :index? ? log_list_message : log_common_message
-    end
-
-    def log_list_message
-      "User: UNAUTHORIZED | Action: #{action_string} attempted " \
-      "on #{record.class} with ID #{record.id} " \
-      "by User with ID #{user.id} and Role #{user.role_as_string} " \
-      "(username: #{user.username}) | (401 Unauthorized)"
+      @log_message = action == :index? ? log_list_message : log_common_message
     end
 
     def log_common_message
+      "User: UNAUTHORIZED | Action: #{action_string} attempted " \
+        "on #{record.class} with ID #{record.id} " \
+        "by User with ID #{user.id} and Role #{user.role_as_string} " \
+        "(username: #{user.username}) | (401 Unauthorized)"
+    end
+
+    def log_list_message
       raise NotImplementedError
     end
 
@@ -59,10 +59,10 @@ module Exceptions
       end
     end
 
-    def log_common_message
+    def log_list_message
       'User: UNAUTHORIZED | Access Users list attempted ' \
-      "by User with ID #{user.id} with Role #{user.role_as_string} " \
-      "(username: #{user.username}) | (401 Unauthorized)"
+        "by User with ID #{user.id} with Role #{user.role_as_string} " \
+        "(username: #{user.username}) | (401 Unauthorized)"
     end
   end
 
@@ -84,10 +84,10 @@ module Exceptions
       end
     end
 
-    def log_common_message
+    def log_list_message
       'User: UNAUTHORIZED | Access Assets list attempted ' \
-      "by User with ID #{user.id} with Role #{user.role_as_string} " \
-      "(username: #{user.username}) | (401 Unauthorized)"
+        "by User with ID #{user.id} with Role #{user.role_as_string} " \
+        "(username: #{user.username}) | (401 Unauthorized)"
     end
   end
 end

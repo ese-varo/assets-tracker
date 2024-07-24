@@ -3,7 +3,7 @@
 # policy to handle authorization on the asset resource
 class AssetPolicy < ApplicationPolicy
   def authorize(action)
-    return if super(action)
+    return if super
 
     raise Exceptions::UnauthorizedAssetAction.new(action, record, user)
   end

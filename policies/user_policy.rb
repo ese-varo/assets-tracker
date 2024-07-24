@@ -3,7 +3,7 @@
 # policy to handle authorization on the user resource
 class UserPolicy < ApplicationPolicy
   def authorize(action)
-    return if super(action)
+    return if super
 
     raise Exceptions::UnauthorizedUserAction.new(action, record, user)
   end
@@ -25,6 +25,6 @@ class UserPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.is_manager? || user.is_admin? && user.id != record.id
+    (user.is_manager? || user.is_admin?) && user.id != record.id
   end
 end
