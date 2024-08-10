@@ -31,7 +31,7 @@ module Database
       log_pending_migrations(pending_migrations)
     rescue SQLite3::Exception => e
       msg = 'Something went wrong while verifying pending migrations: ' \
-        "#{e.message}"
+            "#{e.message}"
       logger.error(msg)
     end
 
