@@ -55,13 +55,13 @@ class CSVAssetImporterService < BaseService
 
   def process_asset_creation(asset_data)
     new_asset = Asset.create(**asset_data)
-    @created_assets += 1
+    self.created_assets += 1
     log_create(new_asset)
   end
 
   def process_asset_update(asset, new_asset_data)
     asset.update(**new_asset_data.slice(:serial_number, :type))
-    @updated_assets += 1
+    self.updated_assets += 1
     log_update(asset)
   end
 
