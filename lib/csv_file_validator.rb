@@ -5,7 +5,7 @@ class CSVFileValidator
   class << self
     def validate(file, required_headers)
       raise CSVFileError, 'No file uploaded' if file.nil?
-      raise CSVFileError, 'File is empty' if file.read.empty?
+      raise CSVFileError, 'File is empty' if File.empty?(file)
 
       handle_missing_headers(file, required_headers)
       CSV.parse(File.read(file), skip_blanks: true, strip: true)

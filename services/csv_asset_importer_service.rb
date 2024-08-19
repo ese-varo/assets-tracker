@@ -33,7 +33,7 @@ class CSVAssetImporterService < BaseService
   attr_accessor :created_assets, :updated_assets
 
   def import_assets
-    table = CSV.parse(csv_file, headers: true)
+    table = CSV.read(csv_file, headers: true)
     logger.info('Asset: UPDATE-CREATE | Import from CSV process initiated')
     table.each { |row| process_asset(build_asset_from_row(row)) }
   end
