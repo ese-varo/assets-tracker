@@ -47,7 +47,7 @@ module AssetsHelpers
     logger.info(with_cid(msg))
   end
 
-  def log_delete
+  def log_delete(asset)
     msg = "Asset: DELETE | Asset with ID #{asset.id} " \
           'deleted successfully | (204 No Content)'
     logger.info(with_cid(msg))

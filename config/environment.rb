@@ -10,6 +10,7 @@ require_all 'helpers'
 require_all 'errors'
 require_all 'policies', sort_by_pattern: /application/
 require_all 'models', sort_by_pattern: /model/
+require_all 'services', sort_by_pattern: /base/
 require_all 'controllers', sort_by_pattern: /application/
 
 DB = Database::Connection.instance.connection

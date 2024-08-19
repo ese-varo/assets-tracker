@@ -12,7 +12,7 @@ AllCops:
   NewCops: enable
 
 Lint/MissingSuper:
-  AllowedParentClasses: [Model::Base]
+  AllowedParentClasses: [Model::Base, BaseService]
 
 Metrics/AbcSize:
   AllowedMethods: [update, log]
@@ -28,7 +28,7 @@ Metrics/MethodLength:
   AllowedMethods: [action_to_text]
 
 Metrics/ClassLength:
-  CountAsOne: ['method_call']
+  CountAsOne: ['method_call', 'heredoc']
 
 Metrics/ParameterLists:
   CountKeywordArgs: false
