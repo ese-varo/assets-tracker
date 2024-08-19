@@ -20,6 +20,14 @@ class AssetPolicy < ApplicationPolicy
     user.is_manager? || user.is_admin?
   end
 
+  def show_upload_csv?
+    user.is_manager? || user.is_admin?
+  end
+
+  def upload_csv?
+    user.is_manager? || user.is_admin?
+  end
+
   def create?
     user.is_manager? || user.is_admin?
   end

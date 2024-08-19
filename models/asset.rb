@@ -37,24 +37,58 @@ class Asset < Model::Base
   end
 
   def save!
-    raise Exceptions::AssetValidationError.new(@errors, save_err) unless validate
-
-    query = <<-SQL
-      INSERT INTO assets (type, serial_number, user_id)
-      VALUES (?, ?, ?)
-    SQL
-    DB.execute query, [type, serial_number, user_id]
+    handle_asset_validation(save_err)
+    DB.execute insert_query, [type, serial_number, user_id]
+  rescue SQLite3::ConstraintException => e
+    handle_constraint_exception(e)
   rescue SQLite3::Exception => e
-    @errors << e.message
-    raise Exceptions::AssetValidationError.new(@errors, save_err)
+    handle_generic_exceptions(e, save_err)
   end
 
   def update(type:, serial_number:)
     self.type = type
     self.serial_number = serial_number
-    raise Exceptions::AssetValidationError.new(@errors, update_err) unless validate
+    handle_asset_validation(update_err)
 
-    stmt = DB.prepare <<-SQL
+    stmt = DB.prepare update_query
+    stmt.execute self.type, self.serial_number, id
+  rescue SQLite3::Exception => e
+    handle_generic_exception(e, update_err)
+  end
+
+  private
+
+  def handle_asset_validation(generic_err_msg)
+    raise Exceptions::AssetValidationError.new(@errors, generic_err_msg) unless validate
+  end
+
+  def handle_generic_exceptions(error, generic_err_msg)
+    @errors << error.message
+    raise Exceptions::AssetValidationError.new(@errors, generic_err_msg)
+  end
+
+  def handle_constraint_exception(error)
+    @errors << if match_unique_constraint_msg? error.message
+                 unique_constraint_err_msg
+               else
+                 error.message
+               end
+    raise Exceptions::AssetValidationError.new(@errors, save_err)
+  end
+
+  def match_unique_constraint_msg?(message)
+    message.match?(/UNIQUE.*serial_number/)
+  end
+
+  def insert_query
+    <<-SQL
+      INSERT INTO assets (type, serial_number, user_id)
+      VALUES (?, ?, ?)
+    SQL
+  end
+
+  def update_query
+    <<-SQL
       UPDATE assets
       SET
         type = ?,
@@ -62,13 +96,12 @@ class Asset < Model::Base
         updated_at = (unixepoch('now', 'localtime'))
       WHERE id = ?
     SQL
-    stmt.execute type, serial_number, id
-  rescue SQLite3::Exception => e
-    @errors << e.message
-    raise Exceptions::AssetValidationError.new(@errors, update_err)
   end
 
-  private
+  def unique_constraint_err_msg
+    'Serial number should be unique, ' \
+      "an asset with serial number #{serial_number} already exists"
+  end
 
   def validate_type
     return if type.match? TYPE_FORMAT_REGEX

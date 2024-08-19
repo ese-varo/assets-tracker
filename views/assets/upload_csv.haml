@@ -1,0 +1,12 @@
+%h1 Upload Assets from CSV
+- @errors&.each do |error|
+  %p= error
+%form(action="/assets/upload_csv" enctype="multipart/form-data" method="post")
+  %fieldset
+    %legend Upload Assets from csv
+    != csrf_tag
+    %label(for="file")
+      CSV File:
+      %input#type(type="file" name="file" accept=".csv" required)
+
+  %button(type="submit") Upload

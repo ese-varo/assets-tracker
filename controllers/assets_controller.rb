@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'csv'
+
 class AssetsController < ApplicationController
   helpers AssetsHelpers
   before do
@@ -25,6 +27,12 @@ class AssetsController < ApplicationController
     haml :'assets/new'
   end
 
+  get '/upload_csv' do
+    authorize! to: :show_upload_csv?, on: :Asset
+    log_form('upload csv')
+    haml :'assets/upload_csv'
+  end
+
   get '/:id/edit' do
     @asset = Asset.find_by_id(params[:id])
     raise Exceptions::AssetNotFound.new(params[:id]) unless @asset
@@ -41,6 +49,20 @@ class AssetsController < ApplicationController
     authorize! @asset, to: :show?
     log_show
     haml :'assets/asset'
+  end
+
+  post '/upload_csv' do
+    authorize! to: :upload_csv?, on: :Asset
+    @errors = []
+    logger_wrapper = LoggerWrapper.new(logger, env['correlation_id'])
+    assets_csv = params[:file][:tempfile]
+    begin
+      result = CSVAssetImporterService.call(assets_csv, DB, logger_wrapper)
+      @errors << result.error unless result.success?
+    rescue Exceptions::AssetValidationError => e
+      @errors.push(*e.errors)
+    end
+    haml :'assets/upload_csv'
   end
 
   post '/' do
@@ -73,7 +95,7 @@ class AssetsController < ApplicationController
     @asset = Asset.find_by_id(params[:id])
     authorize! @asset, to: :destroy?
     @asset.destroy
-    log_delete
+    log_delete(@asset)
     redirect '/assets'
   end
 end

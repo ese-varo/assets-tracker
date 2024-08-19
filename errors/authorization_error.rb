@@ -24,7 +24,7 @@ module Exceptions
     end
 
     def set_log_message
-      @log_message = case(action)
+      @log_message = case action
                      when :index? then log_index
                      when :new? then log_new
                      when :update?, :show?, :create?, :destroy?
@@ -78,6 +78,7 @@ module Exceptions
       when :update? then 'update this asset'
       when :destroy? then 'delete this asset'
       when :new?, :create? then 'create an asset'
+      when :upload_csv?, :show_upload_csv? then 'upload assets from csv'
       else 'execute this action'
       end
     end
@@ -85,8 +86,8 @@ module Exceptions
     def set_log_message
       if custom_actions.include? action
         case action
-        when :show_load_csv? then log_show_load_csv
-        when :load_csv? then log_load_csv
+        when :show_upload_csv? then log_show_upload_csv
+        when :upload_csv? then log_upload_csv
         end
       else
         super
@@ -94,7 +95,7 @@ module Exceptions
     end
 
     def custom_actions
-      [:show_load_csv?, :load_csv?]
+      %i[show_upload_csv? upload_csv?]
     end
 
     def log_new
@@ -105,11 +106,11 @@ module Exceptions
       "#{log_base_message} | Access Assets list attempted"
     end
 
-    def log_show_load_csv
-      "#{log_base_message} | Access Assets load csv form attempted"
+    def log_show_upload_csv
+      "#{log_base_message} | Access Assets upload csv form attempted"
     end
 
-    def log_load_csv
+    def log_upload_csv
       "#{log_base_message} | Action: #{action_string} attempted on Assets"
     end
   end
