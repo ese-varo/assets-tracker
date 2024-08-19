@@ -13,7 +13,7 @@ class CSVAssetImporterService < BaseService
     @csv_file = csv_file
     @logger = logger
     @created_assets = 0
-    @updated_assets = 0
+    @updated_assets = Hash.new(0)
   end
 
   def call
@@ -61,7 +61,7 @@ class CSVAssetImporterService < BaseService
 
   def process_asset_update(asset, new_asset_data)
     asset.update(**new_asset_data.slice(:serial_number, :type))
-    self.updated_assets += 1
+    self.updated_assets[asset.id] += 1
     log_update(asset)
   end
 
@@ -108,7 +108,7 @@ class CSVAssetImporterService < BaseService
   def success_msg
     "Assets successfully imported from CSV file:\n" \
       "- Created Assets: #{created_assets}\n" \
-      "- Updated Assets: #{updated_assets}"
+      "- Updated Assets: #{updated_assets.size}"
   end
 
   def asset_safe_params
