@@ -1,4 +1,6 @@
 %h1 Assets List
+- @errors&.each do |error|
+  %p= error
 %form{action: "/logout", method: "post"}
   != csrf_tag
   %button{type: "submit"} Logout
@@ -21,3 +23,10 @@
       }
         != csrf_tag
         %button{type: "submit"} Edit
+      %form{
+        action: "/assets/#{a.id}/request",
+        method: "post",
+        style: "display: inline;"
+      }
+        != csrf_tag
+        %button{type: "submit"} Request

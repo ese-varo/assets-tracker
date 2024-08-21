@@ -13,6 +13,13 @@ module AssetsHelpers
     logger.info(with_cid(msg))
   end
 
+  def log_requested
+    msg = 'Asset: INDEX | List of requested assets ' \
+          "for User with ID #{current_user.id}" \
+          "(username: #{current_user.username}) accessed. (200 OK)"
+    logger.info(with_cid(msg))
+  end
+
   def log_show
     msg = "Asset: READ | Asset details for Asset with ID #{params[:id]} " \
           '| (200 OK)'
@@ -33,6 +40,22 @@ module AssetsHelpers
     errors.each { |e| err_msg << "- #{e}\n" }
     err_msg << '(400 Bad Request)'
     logger.warn(with_cid(err_msg))
+  end
+
+  def log_request_error(asset, errors)
+    msg = "Asset: UPDATE | Asset with ID #{asset.id} requested by " \
+          "User with ID #{current_user.id} " \
+          "(username: #{current_user.username}) | Errors:\n"
+    errors.each { |e| msg << "- #{e}\n" }
+    msg << '(403 Forbidden)'
+    logger.warn(with_cid(msg))
+  end
+
+  def log_request(asset)
+    msg = "Asset: UPDATE | Asset with ID #{asset.id} requested by " \
+          "User with ID #{current_user.id} " \
+          "(username: #{current_user.username}) assigned successfully | (200 OK)"
+    logger.info(with_cid(msg))
   end
 
   def log_create(asset)

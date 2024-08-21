@@ -17,7 +17,7 @@ class AssetsController < ApplicationController
 
   get '/assigned' do
     @assets = Asset.find_by_user_id(current_user.id, as_collection: true)
-    log_assinged
+    log_assigned
     haml :'assets/index'
   end
 
@@ -31,6 +31,12 @@ class AssetsController < ApplicationController
     authorize! to: :show_upload_csv?, on: :Asset
     log_form('upload csv')
     haml :'assets/upload_csv'
+  end
+
+  get '/requested' do
+    @assets = Asset.requested_by_user(current_user.id)
+    log_requested
+    haml :'assets/index'
   end
 
   get '/:id/edit' do
@@ -76,6 +82,25 @@ class AssetsController < ApplicationController
     @errors = e.errors
     log_validation_error('create', @errors)
     haml :'assets/new'
+  end
+
+  post '/:id/request' do
+    @asset = Asset.find_by_id(params[:id])
+    raise Exceptions::AssetNotFound.new(params[:id]) unless @asset
+
+    authorize! @asset, to: :request?
+    @errors = []
+    begin
+      @asset.request_by(current_user.id)
+      log_request(@asset)
+    rescue Exceptions::AssetRequestError => e
+      @errors << e.message
+      log_request_error(@asset, @errors)
+    rescue Exceptions::AssetValidationError => e
+      @errors.push(*e.errors)
+      log_request_error(@asset, @errors)
+    end
+    redirect '/assets'
   end
 
   put '/:id' do

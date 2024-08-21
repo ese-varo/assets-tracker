@@ -79,6 +79,7 @@ module Exceptions
       when :destroy? then 'delete this asset'
       when :new?, :create? then 'create an asset'
       when :upload_csv?, :show_upload_csv? then 'upload assets from csv'
+      when :request? then 'request asset'
       else 'execute this action'
       end
     end
@@ -88,6 +89,7 @@ module Exceptions
         case action
         when :show_upload_csv? then log_show_upload_csv
         when :upload_csv? then log_upload_csv
+        when :request? then log_common
         end
       else
         super
@@ -95,7 +97,7 @@ module Exceptions
     end
 
     def custom_actions
-      %i[show_upload_csv? upload_csv?]
+      %i[show_upload_csv? upload_csv? request?]
     end
 
     def log_new

@@ -56,6 +56,14 @@ class Asset < Model::Base
     handle_generic_exception(e, update_err)
   end
 
+  def request_by(user_id)
+    raise Exceptions::AssetRequestError, asset_req_err_msg unless self.user_id.nil?
+
+    DB.execute request_query, [user_id, self.id]
+  rescue SQLite3::Exception => e
+    handle_generic_exceptions(e, update_err)
+  end
+
   private
 
   def handle_asset_validation(generic_err_msg)
@@ -83,7 +91,7 @@ class Asset < Model::Base
   def insert_query
     <<-SQL
       INSERT INTO assets (type, serial_number, user_id)
-      VALUES (?, ?, ?)
+      VALUES (?, ?, ?);
     SQL
   end
 
@@ -94,8 +102,19 @@ class Asset < Model::Base
         type = ?,
         serial_number = ?,
         updated_at = (unixepoch('now', 'localtime'))
-      WHERE id = ?
+      WHERE id = ?;
     SQL
+  end
+
+  def request_query
+    <<-SQL
+      INSERT INTO asset_requests (user_id, asset_id)
+      VALUES (?, ?);
+    SQL
+  end
+
+  def asset_req_err_msg
+    'This asset cannot be requested, it is already assigned to another employee'
   end
 
   def unique_constraint_err_msg
@@ -122,6 +141,12 @@ class Asset < Model::Base
       asset
     end
 
+    def requested_by_user(user_id)
+      build_from_hash_collection(
+        DB.execute(select_requested_by_user_query, user_id)
+      )
+    end
+
     def respond_to_missing?(name, include_private = false)
       /^find_by_(?<prop>.*)/ =~ name
       find_by_methods.include?(prop) || super
@@ -135,6 +160,30 @@ class Asset < Model::Base
 
     def find_by_methods
       %w[serial_number user_id]
+    end
+
+    def select_requested_by_user_query
+      <<-SQL
+      SELECT
+        a.id,
+        a.serial_number,
+        a.type,
+        a.user_id,
+        a.available,
+        a.created_at,
+        a.updated_at
+      FROM
+        asset_requests ar
+      INNER JOIN
+        assets a
+      ON
+        a.id = ar.asset_id
+      INNER JOIN
+        users u
+      ON
+        u.id = ar.user_id
+      WHERE ar.user_id = ?;
+      SQL
     end
   end
 end

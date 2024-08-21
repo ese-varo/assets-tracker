@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'bcrypt', '~> 3.1', '>= 3.1.20'
+gem 'csv', '~> 3.3'
 gem 'haml', '~> 6.3'
 gem 'puma', '~> 6.4', '>= 6.4.2'
 gem 'rackup', '~> 2.1'
