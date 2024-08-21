@@ -13,6 +13,8 @@ end
 
 def migration_template(name)
   <<~TMP
+    # frozen_string_literal: true
+
     module Migration
       class #{migration_class_name(name)} < Base
         def up

@@ -28,7 +28,8 @@ Metrics/MethodLength:
   AllowedMethods: [action_to_text]
 
 Metrics/ClassLength:
-  CountAsOne: ['method_call', 'heredoc']
+  CountAsOne: ['array', 'method_call', 'heredoc']
+  Max: 120
 
 Metrics/ParameterLists:
   CountKeywordArgs: false

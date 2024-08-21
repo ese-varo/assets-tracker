@@ -59,7 +59,7 @@ class Asset < Model::Base
   def request_by(user_id)
     raise Exceptions::AssetRequestError, asset_req_err_msg unless self.user_id.nil?
 
-    DB.execute request_query, [user_id, self.id]
+    DB.execute request_query, [user_id, id]
   rescue SQLite3::Exception => e
     handle_generic_exceptions(e, update_err)
   end

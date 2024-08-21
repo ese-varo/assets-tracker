@@ -61,7 +61,7 @@ class CSVAssetImporterService < BaseService
 
   def process_asset_update(asset, new_asset_data)
     asset.update(**new_asset_data.slice(:serial_number, :type))
-    self.updated_assets[asset.id] += 1
+    updated_assets[asset.id] += 1
     log_update(asset)
   end
 
