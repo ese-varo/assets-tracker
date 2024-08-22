@@ -112,6 +112,6 @@ class CSVAssetImporterService < BaseService
   end
 
   def asset_safe_params
-    %i[serial_number type available user_id]
+    %i[serial_number type user_id]
   end
 end

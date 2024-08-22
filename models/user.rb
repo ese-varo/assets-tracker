@@ -133,6 +133,10 @@ class User < Model::Base
       'users'
     end
 
+    def column_names
+      %i[id username email employee_id role password_hash created_at updated_at]
+    end
+
     private
 
     def find_by_methods

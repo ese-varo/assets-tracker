@@ -3,13 +3,14 @@
 # Handle interaction with database and model functionality
 class Asset < Model::Base
   attr_reader :id, :updated_at, :created_at, :type,
-              :serial_number, :user_id, :available
+              :serial_number, :user_id
+  attr_accessor :user
 
   TYPE_FORMAT_REGEX = /^(?!-)[a-zA-Z]+(-[a-zA-Z]+)*$/
   SERIAL_NUMBER_FORMAT_REGEX = /^[a-zA-Z0-9]+$/
 
   def initialize(
-    type:, serial_number:, user_id:,
+    type:, serial_number:, user_id: nil,
     id: nil, updated_at: nil, created_at: nil, available: nil
   )
     @id = id
@@ -20,6 +21,7 @@ class Asset < Model::Base
     @user_id = user_id
     @available = available
     @errors = []
+    @user = nil
   end
 
   def type=(value)
@@ -28,6 +30,10 @@ class Asset < Model::Base
 
   def serial_number=(value)
     @serial_number = value.upcase
+  end
+
+  def available
+    @available.zero?
   end
 
   def validate
@@ -156,6 +162,10 @@ class Asset < Model::Base
       'assets'
     end
 
+    def column_names
+      %i[id serial_number type user_id created_at updated_at available]
+    end
+
     private
 
     def find_by_methods
@@ -169,9 +179,9 @@ class Asset < Model::Base
         a.serial_number,
         a.type,
         a.user_id,
-        a.available,
         a.created_at,
         a.updated_at
+        a.available,
       FROM
         asset_requests ar
       INNER JOIN

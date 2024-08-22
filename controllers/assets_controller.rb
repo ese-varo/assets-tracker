@@ -10,7 +10,7 @@ class AssetsController < ApplicationController
 
   get '/' do
     authorize! to: :index?, on: :Asset
-    @assets = Asset.all
+    @assets = AssetDTO.all
     log_index
     haml :'assets/index'
   end
@@ -49,7 +49,7 @@ class AssetsController < ApplicationController
   end
 
   get '/:id' do
-    @asset = Asset.find_by_id(params[:id])
+    @asset = AssetDTO.find_by_id(params[:id])
     raise Exceptions::AssetNotFound.new(params[:id]) unless @asset
 
     authorize! @asset, to: :show?
@@ -74,7 +74,6 @@ class AssetsController < ApplicationController
   post '/' do
     authorize! to: :create?, on: :Asset
     data = params_slice_with_sym_keys(:type, :serial_number)
-    data[:user_id] = current_user.id
     @asset = Asset.create(**data)
     log_create(@asset)
     redirect '/assets'
