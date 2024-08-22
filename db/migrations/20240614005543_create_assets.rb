@@ -8,10 +8,10 @@ module Migration
         id            INTEGER PRIMARY KEY ASC,
         serial_number VARCHAR(80) UNIQUE COLLATE NOCASE NOT NULL,
         type          VARCHAR(80) NOT NULL,
-        available     BOOLEAN DEFAULT 1,
         user_id       INTEGER REFERENCES users(id) ON DELETE NO ACTION,
         created_at    INTEGER NOT NULL DEFAULT (unixepoch('now', 'localtime')),
-        updated_at    INTEGER NOT NULL DEFAULT (unixepoch('now', 'localtime'))
+        updated_at    INTEGER NOT NULL DEFAULT (unixepoch('now', 'localtime')),
+        available     BOOLEAN AS (user_id IS NOT NULL) VIRTUAL
       );
       SQL
       db.execute query
