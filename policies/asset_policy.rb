@@ -32,6 +32,10 @@ class AssetPolicy < ApplicationPolicy
     true
   end
 
+  def unassign?
+    user.is_manager? || user.is_admin?
+  end
+
   def create?
     user.is_manager? || user.is_admin?
   end

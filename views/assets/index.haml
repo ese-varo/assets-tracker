@@ -16,17 +16,21 @@
       }
         != csrf_tag
         %input{type: "hidden", name: "_method", value: "delete"}
-        %button{type: "submit"} Delete
+        %button{type: "submit", disabled: !allowed_to?(:destroy?, a)} Delete
       %form{
         action: "/assets/#{a.id}/edit",
         style: "display: inline;"
       }
         != csrf_tag
-        %button{type: "submit"} Edit
+        %button{type: "submit", disabled: !allowed_to?(:update?, a)} Edit
       %form{
-        action: "/assets/#{a.id}/request",
+        action: "/assets/#{a.id}/#{a.available ? 'request' : 'unassign'}",
         method: "post",
         style: "display: inline;"
       }
         != csrf_tag
-        %button{type: "submit"} Request
+        %button{
+          type: "submit",
+          disabled: a.available ? !allowed_to?(:request?, a) : !allowed_to?(:unassign?, a)
+        }
+          = a.available ? 'Request' : 'Unassign'

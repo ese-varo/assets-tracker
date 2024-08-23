@@ -43,12 +43,28 @@ module AssetsHelpers
   end
 
   def log_request_error(asset, errors)
-    msg = "Asset: UPDATE | Asset with ID #{asset.id} requested by " \
-          "User with ID #{current_user.id} " \
-          "(username: #{current_user.username}) | Errors:\n"
+    msg = "Asset: UPDATE | Attempt to request Asset with ID #{asset.id} by " \
+          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
+          "failed due to this errors:\n"
     errors.each { |e| msg << "- #{e}\n" }
     msg << '(403 Forbidden)'
     logger.warn(with_cid(msg))
+  end
+
+  def log_unassign_error(asset, errors)
+    msg = "Asset: UPDATE | Attempt to unassign Asset with ID #{asset.id} by " \
+          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
+          "failed due to this errors:\n"
+    errors.each { |e| msg << "- #{e}\n" }
+    msg << '(500 Internal Server Error)'
+    logger.warn(with_cid(msg))
+  end
+
+  def log_unassign(asset)
+    msg = "Asset: UPDATE | Asset with ID #{asset.id} unassigned by " \
+          "User with ID #{current_user.id} " \
+          "(username: #{current_user.username}) unassigned successfully | (200 OK)"
+    logger.info(with_cid(msg))
   end
 
   def log_request(asset)

@@ -3,14 +3,14 @@
 # Module to handle authentication functionality
 module Authentication
   def authenticate!
+    p request.path
     return if authenticated?
 
-    # halt 401, 'Not authorized'
     session[:original_request] = request.path
     redirect '/login'
   end
 
-  # Depending on the controller action where this method
+  # INFO: Depending on the controller action where this method
   # might be called the syntax would vary. There are two scenarios:
   # 1. Actions where the resource already exist and can be
   #    instanciated prior authorization, e.g. to update an asset
@@ -23,6 +23,9 @@ module Authentication
     policy(record, on: on).authorize(to)
   end
 
+  # INFO: allowed_to? is useful for validating authorization on views since
+  # if an action is not authorized for a user no exceptions are raised as
+  # it does happens with the authorize! method
   def allowed_to?(action, record)
     policy(record).allowed_to?(action)
   end

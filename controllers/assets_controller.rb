@@ -102,6 +102,21 @@ class AssetsController < ApplicationController
     redirect '/assets'
   end
 
+  post '/:id/unassign' do
+    @asset = Asset.find_by_id(params[:id])
+    raise Exceptions::AssetNotFound.new(params[:id]) unless @asset
+
+    authorize! @asset, to: :unassign?
+    @errors = []
+    @asset.unassign_user
+    log_unassign(@asset)
+  rescue Exceptions::AssetValidationError => e
+    @errors.push(*e.errors)
+    log_unassign_error(@asset, @errors)
+  ensure
+    redirect back
+  end
+
   put '/:id' do
     data = params_slice_with_sym_keys(:type, :serial_number)
     @asset = Asset.find_by_id(params[:id])

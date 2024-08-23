@@ -70,6 +70,14 @@ class Asset < Model::Base
     handle_generic_exceptions(e, update_err)
   end
 
+  def unassign_user
+    return if user_id.nil?
+
+    DB.execute('UPDATE assets SET user_id = ? WHERE id = ?;', [nil, id])
+  rescue SQLite3::Exception => e
+    handle_generic_exceptions(e, update_err)
+  end
+
   private
 
   def handle_asset_validation(generic_err_msg)
