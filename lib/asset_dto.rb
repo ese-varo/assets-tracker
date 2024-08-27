@@ -28,8 +28,8 @@ class AssetDTO
 
     def build_asset_with_user(row)
       asset = build_asset(row[..6])
-      asset.user = build_user(row[7..])
-      asset
+      user = build_user(row[7..])
+      [asset, user]
     end
 
     def build_asset(row)

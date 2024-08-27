@@ -6,31 +6,31 @@
   %button{type: "submit"} Logout
 %a{href: "/assets/new"} Add new asset
 %ul
-  - @assets.each do |a|
+  - @assets.each do |asset, user|
     %li
-      != partial('_asset', asset: a)
+      != partial('_asset', asset: asset, user: user)
       %form{
-        action: "/assets/#{a.id}",
+        action: "/assets/#{asset.id}",
         method: "post",
         style: "display: inline;"
       }
         != csrf_tag
         %input{type: "hidden", name: "_method", value: "delete"}
-        %button{type: "submit", disabled: !allowed_to?(:destroy?, a)} Delete
+        %button{type: "submit", disabled: !allowed_to?(:destroy?, asset)} Delete
       %form{
-        action: "/assets/#{a.id}/edit",
+        action: "/assets/#{asset.id}/edit",
         style: "display: inline;"
       }
         != csrf_tag
-        %button{type: "submit", disabled: !allowed_to?(:update?, a)} Edit
+        %button{type: "submit", disabled: !allowed_to?(:update?, asset)} Edit
       %form{
-        action: "/assets/#{a.id}/#{a.available ? 'request' : 'unassign'}",
+        action: "/assets/#{asset.id}/#{asset.available ? 'request' : 'unassign'}",
         method: "post",
         style: "display: inline;"
       }
         != csrf_tag
         %button{
           type: "submit",
-          disabled: a.available ? !allowed_to?(:request?, a) : !allowed_to?(:unassign?, a)
+          disabled: asset.available ? !allowed_to?(:request?, asset) : !allowed_to?(:unassign?, asset)
         }
-          = a.available ? 'Request' : 'Unassign'
+          = asset.available ? 'Request' : 'Unassign'

@@ -6,6 +6,6 @@
   Available: #{asset.available ? 'Yes' : 'No'}
   %br/
   - unless asset.available
-    Assigned to: #{asset.user.username}, with Employee ID: #{asset.user.employee_id}
+    Assigned to: #{user.username}, with Employee ID: #{user.employee_id}
     %br/
   Last time updated: #{Time.at(asset.updated_at).strftime('%F')}

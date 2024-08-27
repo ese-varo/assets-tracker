@@ -4,7 +4,6 @@
 class Asset < Model::Base
   attr_reader :id, :updated_at, :created_at, :type,
               :serial_number, :user_id
-  attr_accessor :user
 
   TYPE_FORMAT_REGEX = /^(?!-)[a-zA-Z]+(-[a-zA-Z]+)*$/
   SERIAL_NUMBER_FORMAT_REGEX = /^[a-zA-Z0-9]+$/
@@ -21,7 +20,6 @@ class Asset < Model::Base
     @user_id = user_id
     @available = available
     @errors = []
-    @user = nil
   end
 
   def type=(value)
@@ -183,13 +181,7 @@ class Asset < Model::Base
     def select_requested_by_user_query
       <<-SQL
       SELECT
-        a.id,
-        a.serial_number,
-        a.type,
-        a.user_id,
-        a.created_at,
-        a.updated_at
-        a.available,
+        a.*
       FROM
         asset_requests ar
       INNER JOIN
