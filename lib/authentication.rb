@@ -3,7 +3,6 @@
 # Module to handle authentication functionality
 module Authentication
   def authenticate!
-    p request.path
     return if authenticated?
 
     session[:original_request] = request.path

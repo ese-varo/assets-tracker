@@ -1,0 +1,27 @@
+%h1 Requested Assets
+%h2 Pending
+%ul
+  - @pending.each do |asset|
+    %li
+      %p
+        = asset.type
+        %br
+        Serial Number: #{asset.serial_number}
+        %br
+        %form{action: "/assets/#{asset.id}/remove_request", method: "post"}
+          != csrf_tag
+          %input{type: "hidden", name: "_method", value: "delete"}
+          %button{type: "submit"} Cancel
+%h2 Rejected
+%ul
+  - @rejected.each do |asset|
+    %li
+      %p
+        = asset.type
+        %br
+        Serial Number: #{asset.serial_number}
+        %br
+        %form{action: "/assets/#{asset.id}/remove_request", method: "post"}
+          != csrf_tag
+          %input{type: "hidden", name: "_method", value: "delete"}
+          %button{type: "submit"} Remove

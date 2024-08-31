@@ -14,5 +14,15 @@
       %input#serial_number{
         type: "text", name: "serial_number", value: @asset.serial_number
       }(required)
+    %label(for="user-select")
+      Assigned to:
+      %select#user-select{
+        name: "user_id",
+        disabled: false
+      }
+        %option{value: ""} --Not Assigned--
+        - @users.each do |user|
+          %option{value: user.id, selected: user.id == @asset.user_id}
+            = user.username
 
   %button(type="submit") Submit

@@ -31,6 +31,6 @@
         != csrf_tag
         %button{
           type: "submit",
-          disabled: asset.available ? !allowed_to?(:request?, asset) : !allowed_to?(:unassign?, asset)
+          disabled: asset.available ? !allowed_to?(:request?, asset) : !allowed_to?(:update?, asset)
         }
           = asset.available ? 'Request' : 'Unassign'

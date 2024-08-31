@@ -1,6 +1,6 @@
 %h1 Asset
 %a{href: "/assets"} Go home
-!= partial('_asset', asset: @asset)
+!= partial('_asset', asset: @asset, user: @user)
 %form{action: "/assets/#{@asset.id}/edit"}
   != csrf_tag
   %button{type: "submit"} Edit

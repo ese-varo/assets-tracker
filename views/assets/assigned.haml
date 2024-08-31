@@ -1,0 +1,13 @@
+%h1 My Assigned Assets
+- if @assets.empty?
+  %p You don't have assign assets
+
+- @assets.each do |asset|
+  %ul
+    %li
+      %p
+        Asset type: #{asset.type}
+        %br
+        Serial Number: #{asset.serial_number}
+        %br
+

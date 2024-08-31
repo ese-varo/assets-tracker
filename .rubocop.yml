@@ -29,7 +29,10 @@ Metrics/MethodLength:
 
 Metrics/ClassLength:
   CountAsOne: ['array', 'method_call', 'heredoc']
-  Max: 130
+  Max: 200
+
+Metrics/ModuleLength:
+  Max: 200
 
 Metrics/ParameterLists:
   CountKeywordArgs: false

@@ -20,6 +20,11 @@ module AssetsHelpers
     logger.info(with_cid(msg))
   end
 
+  def log_pending_requests
+    msg = 'Asset: INDEX | List of pending requested assets accessed. (200 OK)'
+    logger.info(with_cid(msg))
+  end
+
   def log_show
     msg = "Asset: READ | Asset details for Asset with ID #{params[:id]} " \
           '| (200 OK)'
@@ -42,35 +47,81 @@ module AssetsHelpers
     logger.warn(with_cid(err_msg))
   end
 
-  def log_request_error(asset, errors)
-    msg = "Asset: UPDATE | Attempt to request Asset with ID #{asset.id} by " \
-          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
-          "failed due to this errors:\n"
-    errors.each { |e| msg << "- #{e}\n" }
-    msg << '(403 Forbidden)'
-    logger.warn(with_cid(msg))
-  end
-
-  def log_unassign_error(asset, errors)
-    msg = "Asset: UPDATE | Attempt to unassign Asset with ID #{asset.id} by " \
-          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
-          "failed due to this errors:\n"
-    errors.each { |e| msg << "- #{e}\n" }
-    msg << '(500 Internal Server Error)'
-    logger.warn(with_cid(msg))
-  end
-
-  def log_unassign(asset)
-    msg = "Asset: UPDATE | Asset with ID #{asset.id} unassigned by " \
-          "User with ID #{current_user.id} " \
-          "(username: #{current_user.username}) unassigned successfully | (200 OK)"
+  def log_assign(asset, requesting_user)
+    msg = "Asset: UPDATE | Asset with ID #{asset.id} requested by " \
+          "User with ID #{requesting_user.id} (username: #{requesting_user.username}), " \
+          "successfully assigned by User with ID #{current_user.id} " \
+          "(username: #{current_user.username}) | (200 OK)"
     logger.info(with_cid(msg))
   end
 
-  def log_request(asset)
+  def log_assign_error(asset, error_msg, requesting_user)
+    msg = "Asset: UPDATE | Failed to accept request on Asset with ID #{asset.id}, " \
+          "requested by User with ID #{requesting_user.id} " \
+          "(username: #{requesting_user.username}), action attempted by " \
+          "User with ID #{current_user.id} (username: #{current_user.username}) " \
+          "| Error: #{error_msg} | (500 Internal Server Error)"
+    logger.warn(with_cid(msg))
+  end
+
+  def log_reject(asset, requesting_user)
     msg = "Asset: UPDATE | Asset with ID #{asset.id} requested by " \
+          "User with ID #{requesting_user.id} (username: #{requesting_user.username}), " \
+          "successfully rejected by User with ID #{current_user.id} " \
+          "(username: #{current_user.username}) | (200 OK)"
+    logger.info(with_cid(msg))
+  end
+
+  def log_reject_error(asset, error_msg, requesting_user)
+    msg = "Asset: UPDATE | Failed to reject request on Asset with ID #{asset.id}, " \
+          "requested by User with ID #{requesting_user.id} (username: #{requesting_user.username}), " \
+          "action attempted by User with ID #{current_user.id} " \
+          "(username: #{current_user.username}) | Error: #{error_msg} | (500 Internal Server Error)"
+    logger.warn(with_cid(msg))
+  end
+
+  def log_request(asset)
+    msg = "Asset: UPDATE | Asset with ID #{asset.id} successfully requested by " \
+          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
+          '(200 OK)'
+    logger.info(with_cid(msg))
+  end
+
+  def log_request_error(asset, error_msg)
+    msg = "Asset: UPDATE | Failed to request Asset with ID #{asset.id}, action attempted by " \
+          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
+          "Error: #{error_msg} | (500 Internal Server Error)"
+    logger.warn(with_cid(msg))
+  end
+
+  def log_remove_request(asset_id, requesting_user_id)
+    msg = "Asset: UPDATE | Request for Asset with ID #{asset_id} requested by" \
+          "User with ID #{requesting_user_id}, successfully removed by User " \
+          "with ID #{current_user.id} (username: #{current_user.username}) | (200 OK)"
+    logger.info(with_cid(msg))
+  end
+
+  def log_remove_request_error(asset_id, requesting_user_id, error_msg)
+    msg = "Asset: UPDATE | Failed to remove request for Asset with ID #{asset_id}, " \
+          "requested by User with ID #{requesting_user_id}, action attempted by " \
+          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
+          "Error: #{error_msg} | (500 Internal Server Error)"
+    logger.warn(with_cid(msg))
+  end
+
+  def log_unassign_error(asset, error_msg, assigned_user_id)
+    msg = "Asset: UPDATE | Failed to unassign Asset with ID #{asset.id} " \
+          "(assigned to User with ID #{assigned_user_id}) by" \
+          "User with ID #{current_user.id} (username: #{current_user.username}) | " \
+          "failed | #{error_msg} (500 Internal Server Error)"
+    logger.warn(with_cid(msg))
+  end
+
+  def log_unassign(asset, assigned_user_id)
+    msg = "Asset: UPDATE | Asset with ID #{asset.id} assigned to" \
+          "User with ID #{assigned_user_id}, successfully unassigned by " \
           "User with ID #{current_user.id} " \
-          "(username: #{current_user.username}) assigned successfully | (200 OK)"
+          "(username: #{current_user.username}) | (200 OK)"
     logger.info(with_cid(msg))
   end
 

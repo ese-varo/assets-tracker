@@ -24,6 +24,10 @@ class AssetPolicy < ApplicationPolicy
     user.is_manager? || user.is_admin?
   end
 
+  def show_pending_requests?
+    user.is_manager? || user.is_admin?
+  end
+
   def upload_csv?
     user.is_manager? || user.is_admin?
   end
@@ -32,8 +36,12 @@ class AssetPolicy < ApplicationPolicy
     true
   end
 
-  def unassign?
+  def reject?
     user.is_manager? || user.is_admin?
+  end
+
+  def remove_request?
+    user.id == record.user_id
   end
 
   def create?

@@ -72,44 +72,70 @@ module Exceptions
   class UnauthorizedAssetAction < UnauthorizedAction
     private
 
+    ACTION_PHRASES = {
+      show?: 'access this page',
+      index?: 'access this page',
+      update?: 'update this asset',
+      destroy?: 'delete this asset',
+      new?: 'create an asset',
+      create?: 'create an asset',
+      upload_csv?: 'upload assets from csv',
+      show_upload_csv?: 'upload assets from csv',
+      show_pending_requests?: 'manage asset requests',
+      request?: 'request asset',
+      reject?: 'reject asset request',
+      remove_request?: 'remove asset request'
+    }.freeze
+
+    CUSTOM_ACTION_LOG_METHODS = {
+      show_upload_csv?: :log_show_upload_csv,
+      show_pending_requests?: :log_show_pending_requests,
+      upload_csv?: :log_upload_csv,
+      request?: :log_common,
+      reject?: -> { log_asset_request('Reject') },
+      remove_request?: -> { log_asset_request('Remove') }
+    }.freeze
+
     def action_phrase
-      case action
-      when :show?, :index? then 'access this page'
-      when :update? then 'update this asset'
-      when :destroy? then 'delete this asset'
-      when :new?, :create? then 'create an asset'
-      when :upload_csv?, :show_upload_csv? then 'upload assets from csv'
-      when :request? then 'request asset'
-      else 'execute this action'
-      end
+      ACTION_PHRASES.fetch(action, 'execute this action')
     end
 
     def set_log_message
-      if custom_actions.include? action
-        case action
-        when :show_upload_csv? then log_show_upload_csv
-        when :upload_csv? then log_upload_csv
-        when :request? then log_common
-        end
-      else
-        super
-      end
+      return super unless custom_actions.include? action
+
+      log_method = CUSTOM_ACTION_LOG_METHODS[action]
+      log_method.is_a?(Proc) ? log_method.call : send(log_method)
     end
 
     def custom_actions
-      %i[show_upload_csv? upload_csv? request?]
+      %i[
+        show_upload_csv?
+        upload_csv?
+        request?
+        show_pending_requests?
+        reject?
+        remove_request
+      ]
     end
 
     def log_new
-      "#{log_base_message} | Access Assets new form attempted"
+      "#{log_base_message} | Access to Assets new form attempted"
     end
 
     def log_index
-      "#{log_base_message} | Access Assets list attempted"
+      "#{log_base_message} | Access to Assets list attempted"
     end
 
     def log_show_upload_csv
-      "#{log_base_message} | Access Assets upload csv form attempted"
+      "#{log_base_message} | Access to Assets upload csv form attempted"
+    end
+
+    def log_show_pending_requests
+      "#{log_base_message} | Access to Assets pending requests attempted"
+    end
+
+    def log_asset_request(action)
+      "#{log_base_message} | Action: #{action} Asset Request attempted"
     end
 
     def log_upload_csv

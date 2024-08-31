@@ -1,0 +1,35 @@
+%h1 Pending Asset Requests
+%ul
+  - @assets.each do |asset, requesting_user|
+    %li
+      %p
+        = asset.type
+        %br
+        Serial Number: #{asset.serial_number}
+        %br
+        Requested by: #{requesting_user.username}
+        %br
+      %form{
+        action: "/assets/#{asset.id}/assign",
+        method: "post",
+        style: "display: inline;"
+      }
+        != csrf_tag
+        %input{
+          type: "hidden",
+          name: "requesting_user_id",
+          value: requesting_user.id
+        }
+        %button{type: "submit"} Assign
+      %form{
+        action: "/assets/#{asset.id}/reject",
+        method: "post",
+        style: "display: inline;"
+      }
+        != csrf_tag
+        %input{
+          type: "hidden",
+          name: "requesting_user_id",
+          value: requesting_user.id
+        }
+        %button{type: "submit"} Reject

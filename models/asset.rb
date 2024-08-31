@@ -30,6 +30,10 @@ class Asset < Model::Base
     @serial_number = value.upcase
   end
 
+  def user_id=(value)
+    @user_id = value.empty? ? nil : value.to_i
+  end
+
   def available
     @available.zero?
   end
@@ -49,31 +53,38 @@ class Asset < Model::Base
     handle_generic_exceptions(e, save_err)
   end
 
-  def update(type:, serial_number:)
+  def update(type:, serial_number:, user_id:)
     self.type = type
     self.serial_number = serial_number
+    self.user_id = user_id
     handle_asset_validation(update_err)
 
-    stmt = DB.prepare update_query
-    stmt.execute self.type, self.serial_number, id
+    stmt = DB.prepare update_query(%w[type serial_number user_id])
+    stmt.execute self.type, self.serial_number, self.user_id, id
   rescue SQLite3::Exception => e
-    handle_generic_exception(e, update_err)
+    handle_generic_exceptions(e, update_err)
   end
 
   def request_by(user_id)
-    raise Exceptions::AssetRequestError, asset_req_err_msg unless self.user_id.nil?
+    raise Exceptions::AssetRequestError, not_available_asset unless self.user_id.nil?
 
     DB.execute request_query, [user_id, id]
   rescue SQLite3::Exception => e
-    handle_generic_exceptions(e, update_err)
+    raise Exceptions::AssetRequestError, "Error while generating asset request: #{e.message}"
+  end
+
+  def assign_user(user_id)
+    DB.execute(update_query(['user_id']), [user_id, id])
+  rescue SQLite3::Exception => e
+    raise Exceptions::AssetRequestError, "Error while assigning asset to user: #{e.message}"
   end
 
   def unassign_user
     return if user_id.nil?
 
-    DB.execute('UPDATE assets SET user_id = ? WHERE id = ?;', [nil, id])
+    DB.execute(update_query(['user_id']), [nil, id])
   rescue SQLite3::Exception => e
-    handle_generic_exceptions(e, update_err)
+    raise Exceptions::AssetRequestError, "Error while unassigning user from asset: #{e.message}"
   end
 
   private
@@ -107,15 +118,11 @@ class Asset < Model::Base
     SQL
   end
 
-  def update_query
-    <<-SQL
-      UPDATE assets
-      SET
-        type = ?,
-        serial_number = ?,
-        updated_at = (unixepoch('now', 'localtime'))
-      WHERE id = ?;
-    SQL
+  def update_query(columns)
+    query = 'UPDATE assets SET '
+    columns.each { |col| query += "#{col} = ?, " }
+    query += "updated_at = (unixepoch('now', 'localtime')) "
+    query += 'WHERE id = ?;'
   end
 
   def request_query
@@ -125,7 +132,7 @@ class Asset < Model::Base
     SQL
   end
 
-  def asset_req_err_msg
+  def not_available_asset
     'This asset cannot be requested, it is already assigned to another employee'
   end
 
@@ -154,9 +161,13 @@ class Asset < Model::Base
     end
 
     def requested_by_user(user_id)
-      build_from_hash_collection(
-        DB.execute(select_requested_by_user_query, user_id)
+      pending_requests = build_from_hash_collection(
+        DB.execute(select_requested_by_user_query, [user_id, 'pending'])
       )
+      rejected_requests = build_from_hash_collection(
+        DB.execute(select_requested_by_user_query, [user_id, 'rejected'])
+      )
+      [pending_requests, rejected_requests]
     end
 
     def respond_to_missing?(name, include_private = false)
@@ -192,7 +203,7 @@ class Asset < Model::Base
         users u
       ON
         u.id = ar.user_id
-      WHERE ar.user_id = ?;
+      WHERE ar.user_id = ? AND ar.status = ?;
       SQL
     end
   end
