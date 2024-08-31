@@ -18,7 +18,7 @@ class UsersController < ApplicationController
 
   get '/users/:id/edit' do
     @user = User.find_by_id(params[:id])
-    raise Exceptions::UserNotFound.new(params[:id]) unless @user
+    raise UserNotFound, "User with ID #{params[:id]} not found" unless @user
 
     authorize! @user, to: :update?
     log_edit(@user)
@@ -27,7 +27,7 @@ class UsersController < ApplicationController
 
   get '/users/:id' do
     @user = User.find_by_id(params[:id])
-    raise Exceptions::UserNotFound.new(params[:id]) unless @user
+    raise UserNotFound, "User with ID #{params[:id]} not found" unless @user
 
     authorize! @user, to: :show?
     log_show(@user)
@@ -41,7 +41,7 @@ class UsersController < ApplicationController
     @user.update(**data)
     log_update(@user)
     redirect "/users/#{params['id']}"
-  rescue Exceptions::UserValidationError => e
+  rescue UserValidationError => e
     @errors = e.errors
     log_validation_error('update', @errors)
     haml :'users/edit'
@@ -86,14 +86,14 @@ class UsersController < ApplicationController
     @errors = []
     unless params['password'] == params['password_confirmation']
       @errors << "Passwords doesn't match"
-      raise Exceptions::UserValidationError.new(@errors, User.create_err)
+      raise UserValidationError.new(@errors, User.create_err)
     end
     @user = User.create!(**params_slice_with_sym_keys(
       :username, :email, :employee_id, :password
     ))
     log_create(@user)
     redirect '/login'
-  rescue Exceptions::UserValidationError => e
+  rescue UserValidationError => e
     @errors = e.errors
     log_validation_error('create', @errors)
     haml :'users/signup'

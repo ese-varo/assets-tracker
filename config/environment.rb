@@ -7,7 +7,7 @@ require_relative '../lib/utils'
 
 require_all 'lib'
 require_all 'helpers'
-require_all 'errors'
+require_all 'errors', sort_by_pattern: /application/
 require_all 'policies', sort_by_pattern: /application/
 require_all 'models', sort_by_pattern: /model/
 require_all 'services', sort_by_pattern: /base/

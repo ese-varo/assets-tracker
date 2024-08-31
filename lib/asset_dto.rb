@@ -36,19 +36,19 @@ class AssetDTO
     def approve_asset_request(asset_id, user_id)
       DB.execute(update_asset_request_query, ['approved', asset_id, user_id])
     rescue SQLite3::Exception => e
-      raise Exceptions::AssetRequestError, "Error while approving request: #{e.message}"
+      raise AssetRequestError, "Error while approving request: #{e.message}"
     end
 
     def reject_asset_request(asset_id, user_id)
       DB.execute(update_asset_request_query, ['rejected', asset_id, user_id])
     rescue SQLite3::Exception => e
-      raise Exceptions::AssetRequestError, "Error while rejecting request: #{e.message}"
+      raise AssetRequestError, "Error while rejecting request: #{e.message}"
     end
 
     def remove_asset_request(asset_id, user_id)
       DB.execute(remove_asset_request_query, [asset_id, user_id])
     rescue SQLite3::Exception => e
-      raise Exceptions::AssetRequestError, "Error while removing request: #{e.message}"
+      raise AssetRequestError, "Error while removing request: #{e.message}"
     end
 
     private

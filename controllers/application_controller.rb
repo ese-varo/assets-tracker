@@ -82,7 +82,7 @@ class ApplicationController < Sinatra::Base
     haml :not_found
   end
 
-  error Exceptions::UnauthorizedAction do
+  error UnauthorizedAction do
     error = env['sinatra.error']
     @error_message = error.message
     logger.warn(with_cid(error.log_message))

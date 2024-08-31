@@ -39,7 +39,7 @@ class User < Model::Base
   end
 
   def save!
-    raise Exceptions::UserValidationError.new(@errors, save_err) unless validate
+    raise UserValidationError.new(@errors, save_err) unless validate
 
     query = <<-SQL
       INSERT INTO users (username, email, employee_id, password_hash)
@@ -53,7 +53,7 @@ class User < Model::Base
     ]
   rescue SQLite3::Exception => e
     @errors << e.message
-    raise Exceptions::UserValidationError.new(@errors, save_err)
+    raise UserValidationError.new(@errors, save_err)
   end
 
   def update(username:, email:, employee_id:, role:)
@@ -61,7 +61,7 @@ class User < Model::Base
     self.email = email
     self.employee_id = employee_id
     self.role = role
-    raise Exceptions::UserValidationError.new(@errors, update_err) unless validate
+    raise UserValidationError.new(@errors, update_err) unless validate
 
     stmt = DB.prepare <<-SQL
       UPDATE users
@@ -76,7 +76,7 @@ class User < Model::Base
     stmt.execute username, email, employee_id, role, id
   rescue SQLite3::Exception => e
     @errors << e.message
-    raise Exceptions::UserValidationError.new(@errors, update_err)
+    raise UerValidationError.new(@errors, update_err)
   end
 
   def define_role_methods

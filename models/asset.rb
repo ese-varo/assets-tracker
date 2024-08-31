@@ -50,7 +50,7 @@ class Asset < Model::Base
   rescue SQLite3::ConstraintException => e
     handle_constraint_exception(e)
   rescue SQLite3::Exception => e
-    handle_generic_exceptions(e, save_err)
+    raise AssetError, "Error while saving asset: #{e.message}"
   end
 
   def update(type:, serial_number:, user_id:)
@@ -62,21 +62,21 @@ class Asset < Model::Base
     stmt = DB.prepare update_query(%w[type serial_number user_id])
     stmt.execute self.type, self.serial_number, self.user_id, id
   rescue SQLite3::Exception => e
-    handle_generic_exceptions(e, update_err)
+    raise AssetError, "Error while updating asset: #{e.message}"
   end
 
   def request_by(user_id)
-    raise Exceptions::AssetRequestError, not_available_asset unless self.user_id.nil?
+    raise AssetRequestError, not_available_asset unless self.user_id.nil?
 
     DB.execute request_query, [user_id, id]
   rescue SQLite3::Exception => e
-    raise Exceptions::AssetRequestError, "Error while generating asset request: #{e.message}"
+    raise AssetRequestError, "Error while generating asset request: #{e.message}"
   end
 
   def assign_user(user_id)
     DB.execute(update_query(['user_id']), [user_id, id])
   rescue SQLite3::Exception => e
-    raise Exceptions::AssetRequestError, "Error while assigning asset to user: #{e.message}"
+    raise AssetRequestError, "Error while assigning asset to user: #{e.message}"
   end
 
   def unassign_user
@@ -84,18 +84,13 @@ class Asset < Model::Base
 
     DB.execute(update_query(['user_id']), [nil, id])
   rescue SQLite3::Exception => e
-    raise Exceptions::AssetRequestError, "Error while unassigning user from asset: #{e.message}"
+    raise AssetRequestError, "Error while unassigning user from asset: #{e.message}"
   end
 
   private
 
   def handle_asset_validation(generic_err_msg)
-    raise Exceptions::AssetValidationError.new(@errors, generic_err_msg) unless validate
-  end
-
-  def handle_generic_exceptions(error, generic_err_msg)
-    @errors << error.message
-    raise Exceptions::AssetValidationError.new(@errors, generic_err_msg)
+    raise AssetValidationError.new(@errors, generic_err_msg) unless validate
   end
 
   def handle_constraint_exception(error)
@@ -104,7 +99,7 @@ class Asset < Model::Base
                else
                  error.message
                end
-    raise Exceptions::AssetValidationError.new(@errors, save_err)
+    raise AssetValidationError.new(@errors, save_err)
   end
 
   def match_unique_constraint_msg?(message)
