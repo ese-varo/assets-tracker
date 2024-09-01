@@ -3,6 +3,9 @@
   - @assets.each do |asset, requesting_user|
     %li
       %p
+        - if asset.user_id
+          Asset already assigned to an employee
+          %br
         = asset.type
         %br
         Serial Number: #{asset.serial_number}
@@ -20,7 +23,7 @@
           name: "requesting_user_id",
           value: requesting_user.id
         }
-        %button{type: "submit"} Assign
+        %button{type: "submit"}= asset.user_id ? 'Reassign' : 'Assign'
       %form{
         action: "/assets/#{asset.id}/reject",
         method: "post",
