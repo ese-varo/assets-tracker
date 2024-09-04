@@ -1,2 +1,4 @@
 %body{style: "background: black; color: white;"}
+  - unless flash.empty?
+    %p= flash[:notice]
   != yield

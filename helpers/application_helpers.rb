@@ -8,6 +8,14 @@ module ApplicationHelpers
     @current_user ||= User.find_by_id(session[:user_id])
   end
 
+  def flash
+    settings.flash
+  end
+
+  def set_flash
+    settings.flash = FlashMessages.new(session)
+  end
+
   def with_cid(text)
     "\"correlation_id: #{env['correlation_id']}\" -- : #{text}"
   end
