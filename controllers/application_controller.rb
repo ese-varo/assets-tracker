@@ -55,8 +55,6 @@ class ApplicationController < Sinatra::Base
 
     enable :logging
     ApplicationController.logging_configure
-
-    set :flash, {}
   end
 
   configure :development do
@@ -75,11 +73,6 @@ class ApplicationController < Sinatra::Base
 
   before do
     env['correlation_id'] = SecureRandom.uuid
-    set_flash
-  end
-
-  after do
-    flash&.after_request
   end
 
   not_found do

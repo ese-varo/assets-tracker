@@ -9,11 +9,7 @@ module ApplicationHelpers
   end
 
   def flash
-    settings.flash
-  end
-
-  def set_flash
-    settings.flash = FlashMessages.new(session)
+    env['sinatra.flash']
   end
 
   def with_cid(text)

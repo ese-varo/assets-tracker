@@ -158,6 +158,7 @@ class AssetsController < ApplicationController
     authorize! @asset, to: :update?
     @asset.update(**data)
     log_update(@asset)
+    flash[:notice] = 'Asset has been updated'
     redirect "/assets/#{params['id']}"
   rescue AssetValidationError => e
     @errors = e.errors
