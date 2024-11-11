@@ -12,5 +12,8 @@ require_all 'policies', sort_by_pattern: /application/
 require_all 'models', sort_by_pattern: /model/
 require_all 'services', sort_by_pattern: /base/
 require_all 'controllers', sort_by_pattern: /application/
+require_all 'jobs', sort_by_pattern: /scheduler/
 
 DB = Database::Connection.instance.connection
+SCHEDULER = JobScheduler.new
+SCHEDULER.run
