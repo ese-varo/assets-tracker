@@ -18,3 +18,10 @@ group :development, :test do
   gem 'dotenv', '~> 3.1', '>= 3.1.2'
   gem 'rubocop', '~> 1.64', require: false
 end
+
+group :test do
+  gem 'rspec'
+  gem 'rack-test'
+  gem 'factory_bot'
+  gem 'faker'
+end
