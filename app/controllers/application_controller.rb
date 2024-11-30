@@ -11,8 +11,8 @@ class ApplicationController < Sinatra::Base
   helpers ApplicationHelpers
 
   ONE_DAY_IN_SECONDS = 86_400
-  LOG_DIR = File.expand_path('../logs', __dir__)
-  VIEWS_DIR = File.expand_path('../views', __dir__)
+  LOG_DIR = File.expand_path('../../logs', __dir__)
+  VIEWS_DIR = File.expand_path('../../views', __dir__)
   SESSION_SECRET = ENV['SESSION_SECRET'] || SecureRandom.hex(64)
 
   def self.logging_configure
